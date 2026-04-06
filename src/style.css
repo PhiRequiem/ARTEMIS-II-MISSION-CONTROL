@@ -1,0 +1,135 @@
+@import "tailwindcss";
+
+/* ── Design tokens ───────────────────────────────────────────────────────── */
+@layer base {
+  :root {
+    --accent:        #a78bfa;   /* violet-400  */
+    --accent-dim:    #7c5ccc;
+    --accent-glow:   rgba(167,139,250,0.35);
+    --accent-border: rgba(167,139,250,0.22);
+    --green:         #34d399;   /* emerald-400 */
+    --amber:         #fbbf24;   /* amber-400   */
+    --red:           #f87171;   /* red-400     */
+    --bg:            #0d0d14;
+    --bg-panel:      rgba(18, 16, 28, 0.97);
+    --text-primary:  #e8e4ff;
+    --text-secondary:#9d8fd4;
+    --text-muted:    #4e4470;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text-primary);
+    font-family: 'Inter', 'Share Tech Mono', sans-serif;
+    overflow-x: hidden;
+    font-size: 14px;
+    line-height: 1.5;
+    /* Subtle purple radial glow — like Vite */
+    background-image:
+      radial-gradient(ellipse 70% 40% at 50% -5%, rgba(124,92,204,0.18) 0%, transparent 65%),
+      radial-gradient(ellipse 40% 30% at 85% 110%, rgba(109,40,217,0.10) 0%, transparent 60%);
+    background-attachment: fixed;
+  }
+
+  ::-webkit-scrollbar { width: 4px; height: 4px; }
+  ::-webkit-scrollbar-track { background: #0d0b18; }
+  ::-webkit-scrollbar-thumb { background: #3a2d6e; border-radius: 2px; }
+}
+
+/* ── Panel shell ─────────────────────────────────────────────────────────── */
+@layer components {
+  .panel {
+    background: var(--bg-panel);
+    border: 1px solid var(--accent-border);
+    border-radius: 6px;
+    position: relative;
+    overflow: hidden;
+    box-shadow:
+      0 0 0 1px rgba(167,139,250,0.04),
+      inset 0 1px 0 rgba(167,139,250,0.10),
+      0 4px 32px rgba(0,0,0,0.55);
+  }
+  .panel::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; height: 1px;
+    background: linear-gradient(90deg, transparent 5%, rgba(167,139,250,0.5) 50%, transparent 95%);
+  }
+
+  /* ── Panel title ── */
+  .panel-title {
+    font-family: 'Orbitron', monospace;
+    font-size: 0.66rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    color: var(--accent);
+    text-transform: uppercase;
+    padding: 0.55rem 0.9rem;
+    border-bottom: 1px solid rgba(167,139,250,0.10);
+    background: rgba(167,139,250,0.03);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .panel-title::before {
+    content: '▶';
+    font-size: 0.38rem;
+    color: rgba(167,139,250,0.7);
+  }
+
+  /* ── Typography ── */
+  .mono { font-family: 'Share Tech Mono', monospace; }
+
+  .glow-cyan  { color: var(--accent);  text-shadow: 0 0 12px var(--accent-glow); }
+  .glow-green { color: var(--green);   text-shadow: 0 0 12px rgba(52,211,153,0.45); }
+  .glow-amber { color: var(--amber);   text-shadow: 0 0 12px rgba(251,191,36,0.45); }
+  .glow-red   { color: var(--red);     text-shadow: 0 0 12px rgba(248,113,113,0.45); }
+
+  /* ── Status dot ── */
+  .status-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--green);
+    box-shadow: 0 0 6px var(--green), 0 0 14px rgba(52,211,153,0.35);
+    animation: pulse-dot 2s ease-in-out infinite;
+    flex-shrink: 0;
+  }
+  .status-dot.amber {
+    background: var(--amber);
+    box-shadow: 0 0 6px var(--amber), 0 0 14px rgba(251,191,36,0.35);
+  }
+  .status-dot.red {
+    background: var(--red);
+    box-shadow: 0 0 6px var(--red), 0 0 14px rgba(248,113,113,0.35);
+  }
+}
+
+/* ── Scanlines (very subtle) ─────────────────────────────────────────────── */
+.scanlines-overlay {
+  position: fixed; inset: 0; pointer-events: none; z-index: 9999;
+  background: repeating-linear-gradient(
+    0deg, transparent, transparent 2px,
+    rgba(0,0,0,0.025) 2px, rgba(0,0,0,0.025) 4px
+  );
+}
+
+/* ── Animations ──────────────────────────────────────────────────────────── */
+@keyframes pulse-dot {
+  0%,100% { opacity:1; transform:scale(1); }
+  50%      { opacity:.4; transform:scale(.82); }
+}
+@keyframes blink-active {
+  0%,100% { opacity:1; }
+  50%      { opacity:.3; }
+}
+@keyframes orion-pulse {
+  0%,100% { r:5; opacity:1; }
+  50%      { r:8; opacity:.5; }
+}
+@keyframes data-flicker {
+  0%,92%,100% { opacity:1; }
+  94% { opacity:.35; } 96% { opacity:.9; } 98% { opacity:.25; }
+}
+.data-flicker { animation: data-flicker 8s ease-in-out infinite; }
