@@ -12,7 +12,9 @@
             <div class="flex items-start gap-2">
               <span class="source-badge">{{ src.tag }}</span>
               <div>
-                <div class="source-name">{{ src.name }}</div>
+                <a v-if="src.nameUrl" :href="src.nameUrl" target="_blank" rel="noopener"
+                  class="source-name source-name-link">{{ src.name }}</a>
+                <div v-else class="source-name">{{ src.name }}</div>
                 <div class="source-desc">{{ src.desc }}</div>
                 <a v-if="src.url" :href="src.url" target="_blank" rel="noopener"
                   class="source-link">{{ src.urlLabel }}</a>
@@ -92,9 +94,9 @@
     <div class="px-5 pb-4">
       <div class="border-t border-white/5 pt-3 text-xs leading-relaxed" style="color:#35304a">
         <span style="color:#6d5fa0">⚠ AVISO:</span>
-        Este dashboard es un proyecto de visualización educativa/fan-made. Los datos de telemetría mostrados son estimados
-        basados en la trayectoria publicada por NASA para Artemis II. No representa datos operacionales oficiales de la
-        misión. JPL Horizons, NASA DONKI y NASA Blog son servicios públicos de NASA/JPL.
+        Este dashboard es un proyecto de visualización educativa/fan-made. Los datos de telemetría son estimados
+        basados en la trayectoria publicada por NASA para Artemis II. Los datos de costo provienen de informes públicos
+        NASA OIG y GAO. No representa datos operacionales oficiales de la misión.
         Artemis II es una misión real de NASA programada para 2026.
       </div>
     </div>
@@ -105,51 +107,56 @@
 <script setup>
 const sources = [
   {
-    tag: 'JPL',
-    name: 'JPL Horizons System',
-    desc: 'Posición y velocidad de Orion (target body -187). Efemérides vectoriales en km/s.',
-    url: 'https://ssd.jpl.nasa.gov/horizons/',
-    urlLabel: 'ssd.jpl.nasa.gov/horizons',
-  },
-  {
     tag: 'DONKI',
     name: 'NASA DONKI',
-    desc: 'Space Weather Database of Notifications, Knowledge, Information. Alertas de CMEs solares en tiempo real.',
+    nameUrl: 'https://kauai.ccmc.gsfc.nasa.gov/DONKI/',
+    desc: 'Space Weather Database of Notifications, Knowledge, Information. Alertas de eventos solares (CME, flares) en tiempo real vía api.nasa.gov.',
     url: 'https://kauai.ccmc.gsfc.nasa.gov/DONKI/',
     urlLabel: 'kauai.ccmc.gsfc.nasa.gov/DONKI',
   },
   {
-    tag: 'RSS',
-    name: 'NASA Blog RSS',
-    desc: 'Feed de actualizaciones de misiones NASA vía rss2json.com como proxy CORS.',
-    url: 'https://www.nasa.gov',
-    urlLabel: 'nasa.gov',
+    tag: 'SNAPI',
+    name: 'Spaceflight News API',
+    nameUrl: 'https://api.spaceflightnewsapi.net',
+    desc: 'Noticias y artículos de misiones espaciales en tiempo real. JSON directo, sin proxy.',
+    url: 'https://api.spaceflightnewsapi.net',
+    urlLabel: 'api.spaceflightnewsapi.net',
+  },
+  {
+    tag: 'OIG',
+    name: 'NASA OIG + GAO',
+    nameUrl: 'https://oig.nasa.gov/docs/IG-22-003.pdf',
+    desc: 'Oficina del Inspector General de NASA y Contraloría del Gobierno de EE.UU. Fuente de los datos de costo de misión.',
+    url: 'https://www.gao.gov/products/gao-23-105338',
+    urlLabel: 'GAO-23-105338 · gao.gov',
   },
   {
     tag: 'EST',
     name: 'Fallback estimado',
-    desc: 'Interpolación basada en efemérides publicadas por NASA para Artemis II. Se activa cuando las APIs no responden.',
+    nameUrl: null,
+    desc: 'Telemetría interpolada basada en efemérides publicadas por NASA para Artemis II (trayectoria free-return). Se activa cuando las APIs no responden.',
     url: null,
     urlLabel: null,
   },
 ]
 
 const techStack = [
-  { name: 'Vue 3',         ver: '— Composition API' },
-  { name: 'Vite 5',        ver: '— Build tool' },
-  { name: 'Tailwind CSS',  ver: 'v4 · @tailwindcss/vite' },
-  { name: 'Inter',         ver: '— UI typography' },
-  { name: 'Orbitron',      ver: '— Display / títulos' },
+  { name: 'Vue 3',           ver: '— Composition API' },
+  { name: 'Vite 5',          ver: '— Build tool' },
+  { name: 'Tailwind CSS',    ver: 'v4 · @tailwindcss/vite' },
+  { name: 'vite-plugin-pwa', ver: '— PWA + Service Worker' },
+  { name: 'Inter',           ver: '— UI typography' },
+  { name: 'Orbitron',        ver: '— Display / títulos' },
   { name: 'Share Tech Mono', ver: '— Datos / telemetría' },
-  { name: 'Vercel',        ver: '— Deploy / CDN' },
+  { name: 'Vercel',          ver: '— Deploy / CDN' },
 ]
 
 const credits = [
-  { name: 'NASA',           desc: 'Datos públicos, imágenes y feeds RSS' },
-  { name: 'JPL / Caltech',  desc: 'Sistema Horizons de efemérides' },
-  { name: 'Google Fonts',   desc: 'Inter, Orbitron, Share Tech Mono' },
-  { name: 'rss2json.com',   desc: 'Proxy CORS para feeds RSS' },
-  { name: 'Vercel',         desc: 'Hosting y CDN gratuito' },
+  { name: 'NASA / JPL',              desc: 'Datos públicos, APIs y trayectoria de misión' },
+  { name: 'Spaceflight News API',    desc: 'Noticias espaciales en tiempo real' },
+  { name: 'NASA OIG / GAO',          desc: 'Informes públicos de costo de misión' },
+  { name: 'Google Fonts',            desc: 'Inter, Orbitron, Share Tech Mono' },
+  { name: 'Vercel',                  desc: 'Hosting y CDN gratuito' },
 ]
 </script>
 
@@ -182,6 +189,8 @@ const credits = [
   margin-top: 1px;
 }
 .source-name  { font-size: 0.78rem; font-weight: 600; color: #c4b5fd; }
+.source-name-link { text-decoration: none; transition: color 0.2s; }
+.source-name-link:hover { color: #a78bfa; text-decoration: underline; }
 .source-desc  { font-size: 0.7rem; color: #4e4470; margin-top: 1px; line-height: 1.4; }
 .source-link  {
   font-size: 0.65rem;

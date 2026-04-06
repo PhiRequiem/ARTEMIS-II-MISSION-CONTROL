@@ -9,14 +9,14 @@
     <TopBar />
 
     <!-- ═══════════════ HEADER ═══════════════ -->
-    <header class="sticky top-[30px] z-50 border-b"
+    <header class="sticky top-7.5 z-50 border-b"
       style="background: rgba(10,8,20,0.97); backdrop-filter: blur(10px);
              border-color: rgba(167,139,250,0.12);
              box-shadow: 0 1px 0 rgba(167,139,250,0.06), 0 4px 24px rgba(0,0,0,0.7)">
       <div class="px-5 py-2 flex items-center gap-3 flex-wrap">
 
         <!-- NASA logo + Mission name -->
-        <div class="flex items-center gap-3 flex-shrink-0">
+        <div class="flex items-center gap-3 shrink-0">
           <svg width="36" height="36" viewBox="0 0 36 36" aria-label="NASA"
             style="cursor:pointer" @click="nasaClick">
             <circle cx="18" cy="18" r="17" fill="#0b3d91" stroke="#fc3d21" stroke-width="1.5"/>
@@ -41,10 +41,10 @@
           </div>
         </div>
 
-        <div class="w-px h-7 flex-shrink-0" style="background:rgba(167,139,250,0.12)" />
+        <div class="w-px h-7 shrink-0" style="background:rgba(167,139,250,0.12)" />
 
         <!-- Status dot -->
-        <div class="flex items-center gap-2 flex-shrink-0">
+        <div class="flex items-center gap-2 shrink-0">
           <div class="status-dot"
             :class="overallStatus === 'NOMINAL' ? '' : overallStatus === 'CRITICAL' ? 'red' : 'amber'" />
           <span class="mono text-xs font-bold tracking-widest"
@@ -56,7 +56,7 @@
         <div class="flex-1" />
 
         <!-- ── Countdown to splashdown ── -->
-        <div v-if="splashdownCountdown" class="flex-shrink-0 text-right hidden sm:block">
+        <div v-if="splashdownCountdown" class="shrink-0 text-right hidden sm:block">
           <div class="text-[9px] mono uppercase tracking-widest" style="color:#4e4470">
             {{ splashdownPast ? 'MISIÓN COMPLETADA' : 'T- AMERIZAJE' }}
           </div>
@@ -67,19 +67,19 @@
           </div>
         </div>
 
-        <div class="w-px h-7 flex-shrink-0 hidden sm:block" style="background:rgba(167,139,250,0.12)" />
+        <div class="w-px h-7 shrink-0 hidden sm:block" style="background:rgba(167,139,250,0.12)" />
 
         <!-- UTC + MET -->
-        <div class="text-right flex-shrink-0">
+        <div class="text-right shrink-0">
           <div class="mono text-sm text-white font-semibold tracking-widest">{{ headerDate }} {{ utc }} UTC</div>
           <div class="mono text-xs tracking-widest" style="color:#a78bfa">MET {{ met }}</div>
         </div>
 
-        <div class="w-px h-7 flex-shrink-0" style="background:rgba(167,139,250,0.12)" />
+        <div class="w-px h-7 shrink-0" style="background:rgba(167,139,250,0.12)" />
 
         <!-- Fullscreen button -->
         <button @click="toggleFullscreen"
-          class="flex-shrink-0 flex items-center justify-center w-8 h-8 rounded border transition-all"
+          class="shrink-0 flex items-center justify-center w-8 h-8 rounded border transition-all"
           style="border-color:rgba(167,139,250,0.18); background:rgba(167,139,250,0.04); color:rgba(167,139,250,0.5)"
           @mouseenter="e=>{ e.currentTarget.style.borderColor='rgba(167,139,250,0.45)'; e.currentTarget.style.color='rgba(167,139,250,0.9)' }"
           @mouseleave="e=>{ e.currentTarget.style.borderColor='rgba(167,139,250,0.18)'; e.currentTarget.style.color='rgba(167,139,250,0.5)' }"
@@ -106,7 +106,7 @@
     </header>
 
     <!-- ═══════════════ GRID ═══════════════ -->
-    <main class="px-4 py-3 space-y-3 max-w-[1700px] mx-auto">
+    <main class="px-4 py-3 space-y-3 max-w-425 mx-auto">
 
       <!-- ROW 1 -->
       <div class="row-1">
@@ -136,6 +136,9 @@
         <CrewPanel  class="r3-a" />
         <AlertsLog  class="r3-b" :spaceWeather="spaceWeather" />
       </div>
+
+      <!-- ROW 3.5: Mission Cost -->
+      <MissionCost />
 
       <!-- ROW 4: Distance + DSN Map -->
       <div class="row-4">
@@ -221,8 +224,9 @@ import AlertsLog       from './components/AlertsLog.vue'
 import DistanceGauge   from './components/DistanceGauge.vue'
 import DSNMap          from './components/DSNMap.vue'
 import PhaseAlert      from './components/PhaseAlert.vue'
+import MissionCost     from './components/MissionCost.vue'
 
-const { telemetry, spaceWeather, newsItems, dataSource, lastUpdate } = useMissionData()
+const { telemetry, spaceWeather, dataSource } = useMissionData()
 const { vehicleStatus, crewStatus, dispose: disposeStatus } = useSystemStatus()
 onUnmounted(disposeStatus)
 
