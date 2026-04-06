@@ -17,7 +17,8 @@
 
         <!-- NASA logo + Mission name -->
         <div class="flex items-center gap-3 flex-shrink-0">
-          <svg width="36" height="36" viewBox="0 0 36 36" aria-label="NASA">
+          <svg width="36" height="36" viewBox="0 0 36 36" aria-label="NASA"
+            style="cursor:pointer" @click="nasaClick">
             <circle cx="18" cy="18" r="17" fill="#0b3d91" stroke="#fc3d21" stroke-width="1.5"/>
             <text x="18" y="22" text-anchor="middle" font-size="7.5" font-weight="bold"
               font-family="Arial,sans-serif" fill="white" letter-spacing="0.8">NASA</text>
@@ -148,6 +149,46 @@
     </main>
 
     <ShareBar />
+
+    <!-- 🐇 Easter egg -->
+    <Transition name="bunny">
+      <div v-if="bunnyActive" class="bunny-container" aria-hidden="true">
+        <div class="bunny-suit">
+          <!-- Body -->
+          <svg width="54" height="72" viewBox="0 0 54 72" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <!-- Ears -->
+            <ellipse cx="17" cy="10" rx="5" ry="12" fill="white" opacity="0.9"/>
+            <ellipse cx="37" cy="10" rx="5" ry="12" fill="white" opacity="0.9"/>
+            <ellipse cx="17" cy="10" rx="2.5" ry="8" fill="#f9a8d4"/>
+            <ellipse cx="37" cy="10" rx="2.5" ry="8" fill="#f9a8d4"/>
+            <!-- Helmet -->
+            <circle cx="27" cy="26" r="16" fill="rgba(200,220,255,0.15)" stroke="white" stroke-width="2"/>
+            <circle cx="27" cy="26" r="13" fill="rgba(167,139,250,0.25)" stroke="rgba(167,139,250,0.6)" stroke-width="1"/>
+            <!-- Face -->
+            <circle cx="23" cy="25" r="2" fill="black"/>
+            <circle cx="31" cy="25" r="2" fill="black"/>
+            <circle cx="23.7" cy="24.3" r="0.7" fill="white"/>
+            <circle cx="31.7" cy="24.3" r="0.7" fill="white"/>
+            <path d="M 23 29 Q 27 33 31 29" stroke="#f9a8d4" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+            <!-- Suit body -->
+            <rect x="12" y="40" width="30" height="24" rx="6" fill="white" opacity="0.9"/>
+            <rect x="16" y="44" width="22" height="12" rx="3" fill="rgba(167,139,250,0.3)" stroke="rgba(167,139,250,0.5)" stroke-width="1"/>
+            <!-- NASA badge -->
+            <circle cx="27" cy="50" r="4" fill="#0b3d91" stroke="#fc3d21" stroke-width="0.8"/>
+            <text x="27" y="52" text-anchor="middle" font-size="3" fill="white" font-family="Arial" font-weight="bold">NASA</text>
+            <!-- Arms -->
+            <rect x="2" y="42" width="12" height="8" rx="4" fill="white" opacity="0.85"/>
+            <rect x="40" y="42" width="12" height="8" rx="4" fill="white" opacity="0.85"/>
+            <!-- Legs -->
+            <rect x="14" y="62" width="10" height="8" rx="4" fill="white" opacity="0.85"/>
+            <rect x="30" y="62" width="10" height="8" rx="4" fill="white" opacity="0.85"/>
+            <!-- Tail -->
+            <circle cx="44" cy="58" r="5" fill="white" opacity="0.8"/>
+          </svg>
+          <div class="bunny-label mono">CREW-5 · CONEJONAUTA</div>
+        </div>
+      </div>
+    </Transition>
   </div>
 </template>
 
@@ -239,6 +280,23 @@ const splashdownCountdown = computed(() => {
   return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`
 })
 
+// ── Easter egg — NASA logo clicks ─────────────────────────────────────────
+const bunnyActive = ref(false)
+let nasaClickCount = 0
+let nasaClickTimer = null
+
+function nasaClick() {
+  nasaClickCount++
+  clearTimeout(nasaClickTimer)
+  nasaClickTimer = setTimeout(() => { nasaClickCount = 0 }, 2000)
+
+  if (nasaClickCount >= 5) {
+    nasaClickCount = 0
+    bunnyActive.value = true
+    setTimeout(() => { bunnyActive.value = false }, 6000)
+  }
+}
+
 // ── Fullscreen ─────────────────────────────────────────────────────────────
 const isFullscreen = ref(false)
 
@@ -282,4 +340,48 @@ onMounted(() => {
 @media (max-width: 680px) {
   .row-1, .row-2, .row-25, .row-3, .row-4 { grid-template-columns: 1fr; }
 }
+
+/* ── Easter egg bunny ── */
+.bunny-container {
+  position: fixed;
+  bottom: 40px;
+  left: -120px;
+  z-index: 9999;
+  animation: bunny-hop 6s ease-in-out forwards;
+  pointer-events: none;
+}
+
+@keyframes bunny-hop {
+  0%   { left: -120px;          bottom: 40px; }
+  10%  { left: 8vw;             bottom: 55px; }
+  20%  { left: 16vw;            bottom: 40px; }
+  30%  { left: 26vw;            bottom: 58px; }
+  40%  { left: 36vw;            bottom: 40px; }
+  50%  { left: 50vw;            bottom: 62px; }
+  60%  { left: 62vw;            bottom: 40px; }
+  70%  { left: 74vw;            bottom: 56px; }
+  80%  { left: 84vw;            bottom: 40px; }
+  95%  { left: 100vw;           bottom: 50px; }
+  100% { left: calc(100vw + 120px); bottom: 40px; }
+}
+
+.bunny-suit {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  filter: drop-shadow(0 0 12px rgba(167,139,250,0.6));
+}
+
+.bunny-label {
+  font-size: 0.55rem;
+  color: rgba(167,139,250,0.8);
+  letter-spacing: 0.1em;
+  white-space: nowrap;
+  text-shadow: 0 0 8px rgba(167,139,250,0.5);
+}
+
+/* Transition */
+.bunny-enter-active { animation: bunny-hop 6s ease-in-out forwards; }
+.bunny-leave-active { opacity: 0; transition: opacity 0.3s; }
 </style>
