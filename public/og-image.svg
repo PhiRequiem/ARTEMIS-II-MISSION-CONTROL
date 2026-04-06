@@ -1,0 +1,135 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="0%" r="80%">
+      <stop offset="0%" stop-color="#1a0a3a"/>
+      <stop offset="100%" stop-color="#0d0d14"/>
+    </radialGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#bg)"/>
+
+  <!-- Stars -->
+  <g opacity="0.6">
+    <circle cx="80"  cy="60"  r="1" fill="white" opacity="0.6"/>
+    <circle cx="200" cy="30"  r="1.5" fill="white" opacity="0.4"/>
+    <circle cx="350" cy="80"  r="1" fill="white" opacity="0.7"/>
+    <circle cx="500" cy="20"  r="1" fill="white" opacity="0.5"/>
+    <circle cx="700" cy="50"  r="1.5" fill="white" opacity="0.4"/>
+    <circle cx="900" cy="35"  r="1" fill="white" opacity="0.6"/>
+    <circle cx="1050" cy="70" r="1" fill="white" opacity="0.5"/>
+    <circle cx="1150" cy="25" r="1.5" fill="white" opacity="0.4"/>
+    <circle cx="150" cy="550" r="1" fill="white" opacity="0.4"/>
+    <circle cx="450" cy="580" r="1.5" fill="white" opacity="0.3"/>
+    <circle cx="750" cy="560" r="1" fill="white" opacity="0.5"/>
+    <circle cx="1050" cy="590" r="1" fill="white" opacity="0.4"/>
+  </g>
+
+  <!-- Panel border glow top -->
+  <rect x="30" y="30" width="1140" height="570" rx="12"
+    fill="none" stroke="rgba(167,139,250,0.3)" stroke-width="1"/>
+  <line x1="30" y1="31" x2="1170" y2="31"
+    stroke="url(#topline)" stroke-width="1.5"/>
+  <defs>
+    <linearGradient id="topline" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="transparent"/>
+      <stop offset="50%" stop-color="rgba(167,139,250,0.7)"/>
+      <stop offset="100%" stop-color="transparent"/>
+    </linearGradient>
+  </defs>
+
+  <!-- NASA logo -->
+  <circle cx="100" cy="110" r="40" fill="#0b3d91" stroke="#fc3d21" stroke-width="2"/>
+  <text x="100" y="117" text-anchor="middle" font-size="14" font-weight="bold"
+    font-family="Arial,sans-serif" fill="white" letter-spacing="1">NASA</text>
+  <ellipse cx="100" cy="110" rx="37" ry="12" fill="none" stroke="#fc3d21" stroke-width="1.5"
+    transform="rotate(-28 100 110)" opacity="0.85"/>
+
+  <!-- Title -->
+  <text x="165" y="95" font-size="18" font-weight="700"
+    font-family="Arial,sans-serif" fill="rgba(167,139,250,0.7)" letter-spacing="4">
+    ARTEMIS II
+  </text>
+  <text x="165" y="130" font-size="34" font-weight="900"
+    font-family="Arial,sans-serif" fill="white" letter-spacing="3">
+    MISSION CONTROL
+  </text>
+
+  <!-- Status badges -->
+  <rect x="165" y="148" width="90" height="20" rx="4"
+    fill="rgba(52,211,153,0.12)" stroke="rgba(52,211,153,0.4)" stroke-width="1"/>
+  <circle cx="178" cy="158" r="4" fill="#34d399"/>
+  <text x="188" y="162" font-size="10" font-family="Arial,sans-serif"
+    fill="#34d399" font-weight="700" letter-spacing="1">NOMINAL</text>
+
+  <rect x="265" y="148" width="80" height="20" rx="4"
+    fill="rgba(167,139,250,0.08)" stroke="rgba(167,139,250,0.3)" stroke-width="1"/>
+  <text x="280" y="162" font-size="10" font-family="Arial,sans-serif"
+    fill="rgba(167,139,250,0.8)" font-weight="700" letter-spacing="1">D5 · TRANSIT</text>
+
+  <!-- MET display -->
+  <text x="165" y="230" font-size="60" font-weight="900"
+    font-family="'Courier New',monospace" fill="#fbbf24" filter="url(#glow)"
+    letter-spacing="4">04:12:33:47</text>
+  <text x="165" y="255" font-size="13" font-family="Arial,sans-serif"
+    fill="rgba(251,191,36,0.5)" letter-spacing="3">MET — MISSION ELAPSED TIME</text>
+
+  <!-- Trajectory arc (simplified) -->
+  <g transform="translate(600, 350)">
+    <!-- Earth -->
+    <circle cx="-240" cy="0" r="35" fill="rgba(0,80,200,0.2)" stroke="rgba(0,140,255,0.5)" stroke-width="1.5"/>
+    <text x="-240" y="50" text-anchor="middle" font-size="11" fill="rgba(100,160,255,0.7)"
+      font-family="Arial,sans-serif">TIERRA</text>
+    <!-- Moon -->
+    <circle cx="240" cy="0" r="28" fill="rgba(140,150,170,0.15)" stroke="rgba(160,165,190,0.4)" stroke-width="1.5"/>
+    <text x="240" y="42" text-anchor="middle" font-size="11" fill="rgba(160,165,190,0.7)"
+      font-family="Arial,sans-serif">LUNA</text>
+    <!-- Arc -->
+    <path d="M -205 0 Q 0 -100 205 0" fill="none" stroke="rgba(167,139,250,0.25)"
+      stroke-width="1.5" stroke-dasharray="8 5"/>
+    <path d="M -205 0 Q 0 -100 60 -68" fill="none" stroke="#a78bfa"
+      stroke-width="2.5"/>
+    <!-- Orion -->
+    <circle cx="60" cy="-68" r="10" fill="rgba(167,139,250,0.2)" stroke="#a78bfa" stroke-width="2"/>
+    <text x="75" y="-73" font-size="11" fill="#a78bfa" font-family="Arial,sans-serif"
+      font-weight="bold">ORION</text>
+    <!-- Distance line -->
+    <line x1="-205" y1="15" x2="205" y2="15" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
+    <text x="0" y="30" text-anchor="middle" font-size="11" fill="rgba(255,255,255,0.3)"
+      font-family="Arial,sans-serif">≈ 384,400 km</text>
+  </g>
+
+  <!-- Metrics row -->
+  <g>
+    <rect x="60" y="530" width="200" height="50" rx="4"
+      fill="rgba(167,139,250,0.05)" stroke="rgba(167,139,250,0.15)" stroke-width="1"/>
+    <text x="75" y="552" font-size="10" fill="rgba(167,139,250,0.6)"
+      font-family="Arial,sans-serif" letter-spacing="2">VELOCIDAD</text>
+    <text x="75" y="572" font-size="18" font-weight="bold"
+      font-family="'Courier New',monospace" fill="#a78bfa">1.04 km/s</text>
+
+    <rect x="275" y="530" width="220" height="50" rx="4"
+      fill="rgba(167,139,250,0.05)" stroke="rgba(167,139,250,0.15)" stroke-width="1"/>
+    <text x="290" y="552" font-size="10" fill="rgba(167,139,250,0.6)"
+      font-family="Arial,sans-serif" letter-spacing="2">DIST. TIERRA</text>
+    <text x="290" y="572" font-size="18" font-weight="bold"
+      font-family="'Courier New',monospace" fill="#c4b5fd">333,335 km</text>
+
+    <rect x="510" y="530" width="220" height="50" rx="4"
+      fill="rgba(167,139,250,0.05)" stroke="rgba(167,139,250,0.15)" stroke-width="1"/>
+    <text x="525" y="552" font-size="10" fill="rgba(167,139,250,0.6)"
+      font-family="Arial,sans-serif" letter-spacing="2">DIST. LUNA</text>
+    <text x="525" y="572" font-size="18" font-weight="bold"
+      font-family="'Courier New',monospace" fill="white">57,465 km</text>
+  </g>
+
+  <!-- Author credit -->
+  <text x="1140" y="580" text-anchor="end" font-size="12"
+    font-family="Arial,sans-serif" fill="rgba(167,139,250,0.4)" letter-spacing="2">
+    BY PHIREQUIEM
+  </text>
+</svg>

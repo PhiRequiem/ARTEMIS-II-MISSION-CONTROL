@@ -93,11 +93,12 @@ export function useMissionData() {
     lastUpdate.value = new Date()
   }
 
-  // ── DONKI via api.nasa.gov (CORS OK, rate-limit 30 req/hr w/ DEMO_KEY) ────
+  // ── DONKI via api.nasa.gov (CORS OK, 1000 req/hr) ───────────────────────────
+  const NASA_API_KEY = import.meta.env.VITE_NASA_API_KEY
   async function fetchDONKI() {
     const end   = new Date().toISOString().slice(0, 10)
     const start = new Date(Date.now() - 7 * 86400_000).toISOString().slice(0, 10)
-    const url   = `https://api.nasa.gov/DONKI/CME?startDate=${start}&endDate=${end}&api_key=DEMO_KEY`
+    const url   = `https://api.nasa.gov/DONKI/CME?startDate=${start}&endDate=${end}&api_key=${NASA_API_KEY}`
     const res   = await fetch(url, { signal: AbortSignal.timeout(10_000) })
     if (!res.ok) throw new Error(`DONKI ${res.status}`)
     const data  = await res.json()
@@ -111,26 +112,22 @@ export function useMissionData() {
     }))
   }
 
-  // ── RSS via rss2json.com ──────────────────────────────────────────────────
+  // ── Spaceflight News API (JSON, no key, no proxy) ────────────────────────
   async function fetchNews() {
-    const candidates = [
-      'https://www.nasa.gov/feed/',
-      'https://blogs.nasa.gov/artemis/feed/',
-      'https://spacenews.com/feed/',
-    ]
-    for (const feed of candidates) {
-      try {
-        const url = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(feed)}&count=6`
-        const res = await fetch(url, { signal: AbortSignal.timeout(10_000) })
-        if (!res.ok) continue
-        const data = await res.json()
-        if (data.status === 'ok' && data.items?.length) {
-          newsItems.value = data.items.map(i => ({ title: i.title, date: i.pubDate, link: i.link }))
-          return
-        }
-      } catch { /* try next */ }
-    }
-    // keep static fallback — no throw needed
+    try {
+      const url = 'https://api.spaceflightnewsapi.net/v4/articles/?search=artemis&limit=6&ordering=-published_at'
+      const res = await fetch(url, { signal: AbortSignal.timeout(10_000) })
+      if (!res.ok) throw new Error(`SNAPI ${res.status}`)
+      const data = await res.json()
+      if (data.results?.length) {
+        newsItems.value = data.results.map(i => ({
+          title: i.title,
+          date:  i.published_at,
+          link:  i.url,
+        }))
+        return
+      }
+    } catch { /* keep static fallback */ }
   }
 
   onMounted(() => {
