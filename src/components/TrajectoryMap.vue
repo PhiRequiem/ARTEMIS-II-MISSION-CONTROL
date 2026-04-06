@@ -51,26 +51,27 @@
           fill="rgba(0,80,200,0.14)" stroke="rgba(0,140,255,0.4)" stroke-width="1.2" />
         <text :x="earthCx" :y="cy + 27" text-anchor="middle" font-size="8" fill="rgba(0,140,255,0.6)">TIERRA</text>
 
-        <!-- ORION -->
-        <g v-if="orionVisible">
-          <circle :cx="orionX" :cy="orionY" r="7"
+        <!-- ORION — group translates so CSS transition animates position smoothly -->
+        <g v-if="orionVisible"
+          :transform="`translate(${orionPos.x},${orionPos.y})`"
+          class="orion-group">
+          <circle cx="0" cy="0" r="7"
             fill="rgba(167,139,250,0.12)" stroke="#a78bfa" stroke-width="1.5"
             style="animation: orion-pulse 2s ease-in-out infinite" />
-          <polygon :points="shipPoints" fill="#a78bfa"
+          <polygon :points="shipPointsRel" fill="#a78bfa"
             style="filter: drop-shadow(0 0 4px #a78bfa)" />
           <!-- Label box -->
-          <rect :x="orionX + 10" :y="orionY - 18" width="74" height="20" rx="2"
+          <rect x="10" y="-18" width="74" height="20" rx="2"
             fill="rgba(0,10,25,0.85)" stroke="rgba(167,139,250,0.3)" stroke-width="0.5" />
-          <text :x="orionX + 12" :y="orionY - 8" font-size="7" fill="#a78bfa" font-weight="bold">ORION</text>
-          <text :x="orionX + 12" :y="orionY + 0" font-size="6" fill="rgba(167,139,250,0.6)">
+          <text x="12" y="-8" font-size="7" fill="#a78bfa" font-weight="bold">ORION</text>
+          <text x="12" y="0" font-size="6" fill="rgba(167,139,250,0.6)">
             {{ fmtShort(telemetry?.distEarth) }} km
           </text>
         </g>
 
         <!-- HOY label on completed path -->
         <g v-if="progress > 0.05 && progress < 0.95">
-          <circle :cx="orionX" :cy="orionY + 14" r="0" fill="none" />
-          <text :x="orionX" :y="orionY + 24" text-anchor="middle" font-size="7"
+          <text :x="orionPos.x" :y="orionPos.y + 24" text-anchor="middle" font-size="7"
             fill="rgba(167,139,250,0.5)">HOY</text>
         </g>
 
@@ -86,7 +87,7 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { computed, ref, onMounted, onUnmounted } from 'vue'
 import { MISSION_EPOCH, FALLBACK_DATA } from '../composables/useMissionData.js'
 
 const props = defineProps({ telemetry: Object })
@@ -94,6 +95,20 @@ const props = defineProps({ telemetry: Object })
 const W = 600, H = 260
 const earthCx = 72, cy = H / 2
 const moonCx  = 528
+
+// Reactive clock — updates every second so Orion moves in real-time
+const now = ref(Date.now())
+let raf = null
+let lastTick = 0
+function tick(ts) {
+  if (ts - lastTick >= 1000) {
+    now.value = Date.now()
+    lastTick = ts
+  }
+  raf = requestAnimationFrame(tick)
+}
+onMounted(() => { raf = requestAnimationFrame(tick) })
+onUnmounted(() => cancelAnimationFrame(raf))
 
 // Control points for arcs
 const OUTBOUND_CP = { x: (earthCx + moonCx) / 2, y: 28 }
@@ -121,7 +136,7 @@ const outboundPath = computed(() => makePath(outboundPt))
 const returnPath   = computed(() => makePath(returnPt))
 
 const progress = computed(() => {
-  const d = (Date.now() - MISSION_EPOCH) / 86400000
+  const d = (now.value - MISSION_EPOCH) / 86400000
   return Math.max(0, Math.min(1, d / 10))
 })
 
@@ -151,23 +166,24 @@ const orionPos = computed(() => {
   if (p <= 0.5) return outboundPt(p * 2)
   return returnPt((p - 0.5) * 2)
 })
-const orionX = computed(() => orionPos.value.x)
-const orionY = computed(() => orionPos.value.y)
 const orionVisible = computed(() => progress.value > 0)
 
-const shipPoints = computed(() => {
+// shipPoints in absolute coords (legacy, kept for compatibility)
+const shipPoints = computed(() => shipPointsRel.value)
+
+// Relative to group origin (0,0) — used inside the translated <g>
+const shipPointsRel = computed(() => {
   const p = progress.value
   const p1 = p <= 0.5 ? outboundPt(Math.max(0, p * 2 - 0.01)) : returnPt(Math.max(0,(p - 0.5)*2 - 0.01))
   const p2 = p <= 0.5 ? outboundPt(Math.min(1, p * 2 + 0.01)) : returnPt(Math.min(1,(p - 0.5)*2 + 0.01))
   const angle = Math.atan2(p2.y - p1.y, p2.x - p1.x)
   const cos = Math.cos(angle), sin = Math.sin(angle)
-  const ox = orionX.value, oy = orionY.value
   const sz = 5
   return [
-    [ox + cos * sz * 1.5, oy + sin * sz * 1.5],
-    [ox - cos * sz + sin * sz * 0.7, oy - sin * sz - cos * sz * 0.7],
-    [ox - cos * sz - sin * sz * 0.7, oy - sin * sz + cos * sz * 0.7],
-  ].map(p => p.join(',')).join(' ')
+    [ cos * sz * 1.5,  sin * sz * 1.5],
+    [-cos * sz + sin * sz * 0.7, -sin * sz - cos * sz * 0.7],
+    [-cos * sz - sin * sz * 0.7, -sin * sz + cos * sz * 0.7],
+  ].map(pt => pt.join(',')).join(' ')
 })
 
 // Day markers on outbound arc (D1-D5)
@@ -192,3 +208,10 @@ function fmtShort(n) {
   return String(n)
 }
 </script>
+
+<style scoped>
+/* Smooth position transition for the Orion group */
+.orion-group {
+  transition: transform 0.95s cubic-bezier(0.4, 0, 0.2, 1);
+}
+</style>

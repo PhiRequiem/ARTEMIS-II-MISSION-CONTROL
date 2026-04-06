@@ -53,29 +53,55 @@
           <div class="countdown-big mono">{{ phaseContent.countdown }}</div>
         </template>
 
-        <!-- Default: phase icon -->
+        <!-- Default: phase mini-map -->
         <template v-else>
           <div class="phase-icon">
-            <svg v-if="activePhase === 'orbit'" width="40" height="40" viewBox="0 0 40 40" fill="none">
-              <circle cx="20" cy="20" r="8" fill="rgba(167,139,250,0.15)" stroke="#a78bfa" stroke-width="1.5"/>
-              <ellipse cx="20" cy="20" rx="18" ry="6" fill="none" stroke="rgba(167,139,250,0.4)" stroke-width="1" stroke-dasharray="4 3"/>
-              <circle cx="20" cy="14" r="2.5" fill="#a78bfa"/>
+            <!-- ORBIT -->
+            <svg v-if="activePhase === 'orbit'" width="120" height="56" viewBox="0 0 120 56" fill="none">
+              <circle cx="60" cy="28" r="14" fill="rgba(0,80,200,0.18)" stroke="rgba(100,160,255,0.45)" stroke-width="1.2"/>
+              <text x="60" y="32" text-anchor="middle" font-size="6" fill="rgba(100,160,255,0.7)" font-family="monospace">TIERRA</text>
+              <ellipse cx="60" cy="28" rx="42" ry="14" fill="none" stroke="rgba(167,139,250,0.3)" stroke-width="1" stroke-dasharray="4 3"/>
+              <circle cx="60" cy="14" r="4" fill="rgba(167,139,250,0.2)" stroke="#a78bfa" stroke-width="1.5"/>
+              <circle cx="60" cy="14" r="2" fill="#a78bfa"/>
             </svg>
-            <svg v-else-if="activePhase === 'transit'" width="40" height="40" viewBox="0 0 40 40" fill="none">
-              <circle cx="8" cy="20" r="5" fill="rgba(0,80,200,0.3)" stroke="rgba(100,160,255,0.5)" stroke-width="1"/>
-              <circle cx="32" cy="20" r="4" fill="rgba(140,150,170,0.15)" stroke="rgba(160,165,190,0.4)" stroke-width="1"/>
-              <path d="M 13 20 Q 20 12 28 20" fill="none" stroke="#a78bfa" stroke-width="1.5" stroke-dasharray="3 2"/>
-              <circle cx="22" cy="15" r="2.5" fill="#a78bfa"/>
+            <!-- TRANSIT -->
+            <svg v-else-if="activePhase === 'transit'" width="160" height="56" viewBox="0 0 160 56" fill="none">
+              <circle cx="18" cy="30" r="11" fill="rgba(0,80,200,0.18)" stroke="rgba(100,160,255,0.45)" stroke-width="1.2"/>
+              <text x="18" y="50" text-anchor="middle" font-size="6" fill="rgba(100,160,255,0.6)" font-family="monospace">TIERRA</text>
+              <circle cx="142" cy="30" r="9" fill="rgba(140,150,170,0.12)" stroke="rgba(160,165,190,0.4)" stroke-width="1.2"/>
+              <text x="142" y="50" text-anchor="middle" font-size="6" fill="rgba(160,165,190,0.6)" font-family="monospace">LUNA</text>
+              <!-- full arc dashed -->
+              <path d="M 29 30 Q 80 8 133 30" fill="none" stroke="rgba(167,139,250,0.2)" stroke-width="1.2" stroke-dasharray="5 4"/>
+              <!-- completed segment -->
+              <path d="M 29 30 Q 80 8 70 17" fill="none" stroke="#a78bfa" stroke-width="2" stroke-linecap="round"/>
+              <!-- orion at ~40% -->
+              <circle cx="70" cy="17" r="5" fill="rgba(167,139,250,0.18)" stroke="#a78bfa" stroke-width="1.5"/>
+              <circle cx="70" cy="17" r="2" fill="#a78bfa"/>
             </svg>
-            <svg v-else-if="activePhase === 'return'" width="40" height="40" viewBox="0 0 40 40" fill="none">
-              <circle cx="32" cy="20" r="5" fill="rgba(0,80,200,0.3)" stroke="rgba(100,160,255,0.5)" stroke-width="1"/>
-              <circle cx="8" cy="20" r="4" fill="rgba(140,150,170,0.15)" stroke="rgba(160,165,190,0.4)" stroke-width="1"/>
-              <path d="M 27 20 Q 20 12 12 20" fill="none" stroke="#34d399" stroke-width="1.5" stroke-dasharray="3 2"/>
-              <circle cx="18" cy="15" r="2.5" fill="#34d399"/>
+            <!-- RETURN -->
+            <svg v-else-if="activePhase === 'return'" width="160" height="56" viewBox="0 0 160 56" fill="none">
+              <circle cx="18" cy="28" r="11" fill="rgba(0,80,200,0.18)" stroke="rgba(100,160,255,0.45)" stroke-width="1.2"/>
+              <text x="18" y="48" text-anchor="middle" font-size="6" fill="rgba(100,160,255,0.6)" font-family="monospace">TIERRA</text>
+              <circle cx="142" cy="28" r="9" fill="rgba(140,150,170,0.12)" stroke="rgba(160,165,190,0.4)" stroke-width="1.2"/>
+              <text x="142" y="48" text-anchor="middle" font-size="6" fill="rgba(160,165,190,0.6)" font-family="monospace">LUNA</text>
+              <path d="M 133 28 Q 80 50 29 28" fill="none" stroke="rgba(52,211,153,0.25)" stroke-width="1" stroke-dasharray="5 4"/>
+              <path d="M 133 28 Q 80 50 72 33" fill="none" stroke="#34d399" stroke-width="2"/>
+              <circle cx="72" cy="33" r="5" fill="rgba(52,211,153,0.15)" stroke="#34d399" stroke-width="1.5"/>
+              <circle cx="72" cy="33" r="2" fill="#34d399"/>
             </svg>
-            <svg v-else width="40" height="40" viewBox="0 0 40 40" fill="none">
-              <circle cx="20" cy="20" r="15" fill="none" stroke="rgba(167,139,250,0.2)" stroke-width="1"/>
-              <circle cx="20" cy="20" r="3" fill="#a78bfa"/>
+            <!-- FLYBY -->
+            <svg v-else-if="activePhase === 'flyby'" width="120" height="56" viewBox="0 0 120 56" fill="none">
+              <circle cx="96" cy="28" r="14" fill="rgba(140,150,170,0.12)" stroke="rgba(160,165,190,0.4)" stroke-width="1.2"/>
+              <text x="96" y="48" text-anchor="middle" font-size="6" fill="rgba(160,165,190,0.6)" font-family="monospace">LUNA</text>
+              <path d="M 10 28 Q 50 4 82 16" fill="none" stroke="#a78bfa" stroke-width="1.5"/>
+              <path d="M 82 16 Q 106 8 110 28 Q 106 48 82 40" fill="none" stroke="rgba(167,139,250,0.4)" stroke-width="1" stroke-dasharray="4 3"/>
+              <circle cx="82" cy="16" r="5" fill="rgba(167,139,250,0.15)" stroke="#a78bfa" stroke-width="1.5"/>
+              <circle cx="82" cy="16" r="2" fill="#a78bfa"/>
+            </svg>
+            <!-- DEFAULT -->
+            <svg v-else width="80" height="56" viewBox="0 0 80 56" fill="none">
+              <circle cx="40" cy="28" r="20" fill="none" stroke="rgba(167,139,250,0.15)" stroke-width="1"/>
+              <circle cx="40" cy="28" r="5" fill="rgba(167,139,250,0.2)" stroke="#a78bfa" stroke-width="1.5"/>
             </svg>
           </div>
         </template>
@@ -155,9 +181,10 @@ const { activePhase, phaseContent } = usePhaseContent()
 .pa-inner {
   display: grid;
   grid-template-columns: 1fr auto 1fr;
-  gap: 16px;
+  gap: 20px;
   align-items: center;
-  padding: 10px 16px;
+  padding: 14px 20px;
+  min-height: 72px;
 }
 
 /* ── Left block ── */
@@ -264,7 +291,7 @@ const { activePhase, phaseContent } = usePhaseContent()
 }
 
 /* Phase icon */
-.phase-icon { opacity: 0.85; }
+.phase-icon { opacity: 1; }
 
 /* ── Right: data lines ── */
 .pa-right {
