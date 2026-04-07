@@ -18,6 +18,7 @@
         </svg>
         <span class="mono text-[10px] tracking-wider">Repo</span>
       </a>
+      <span class="mono text-[9px] tracking-wider" style="color:rgba(167,139,250,0.3)">{{ VERSION }}</span>
     </div>
 
     <div class="flex-1" />
@@ -71,6 +72,7 @@
 
 <script setup>
 import { ref } from 'vue'
+import { VERSION } from '../version.js'
 
 const REPO_URL   = 'https://github.com/PhiRequiem/ARTEMIS-II-MISSION-CONTROL'
 const PAGE_URL   = typeof window !== 'undefined' ? window.location.href : REPO_URL
