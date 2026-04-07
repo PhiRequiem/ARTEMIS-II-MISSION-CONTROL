@@ -104,23 +104,23 @@ const EVENTS = [
     desc: 'Demo EVA suits. Briefing objetivos ciencia. Selfies Orion.',
   },
   {
-    id: 6, day: 6, epoch: 5.5, label: 'Lunar Flyby — Cara Oculta',
+    id: 6, day: 6, epoch: 5.0, label: 'Lunar Flyby — Cara Oculta',
     desc: 'Closest approach 6,400 km. Blackout comms ~22min.',
   },
   {
-    id: 7, day: 7, epoch: 6.5, label: 'Return Burn — TPI',
+    id: 7, day: 7, epoch: 6.0, label: 'Return Burn — TPI',
     desc: 'Trans-Earth injection burn. Partida órbita lunar.',
   },
   {
-    id: 8, day: 8, epoch: 7.5, label: 'Trayectoria de retorno',
+    id: 8, day: 8, epoch: 7.0, label: 'Trayectoria de retorno',
     desc: 'Mid-course correction #2. Revisión sistemas reentrada.',
   },
   {
-    id: 9, day: 9, epoch: 8.5, label: 'Preparación reentrada',
+    id: 9, day: 9, epoch: 8.0, label: 'Preparación reentrada',
     desc: 'Separación módulo de servicio. Config guía terminal.',
   },
   {
-    id: 10, day: 10, epoch: 9.5, label: 'Reentrada & Amerizaje',
+    id: 10, day: 10, epoch: 9.0, label: 'Reentrada & Amerizaje',
     desc: 'Entrada 40,000 km/h. Paracaídas. Pacífico. Recovery ops.',
   },
 ]
