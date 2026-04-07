@@ -4,7 +4,7 @@
       LÍNEA DE TIEMPO DE MISIÓN
       <span class="ml-auto mono text-[9px] text-slate-600">{{ dateLabel }} · 2026</span>
     </div>
-    <div class="flex-1 overflow-y-auto p-3 space-y-0" style="max-height: 400px">
+    <div class="flex-1 overflow-y-auto p-3 space-y-0" style="max-height: 550px">
       <div
         v-for="(event, i) in timeline"
         :key="event.id"
@@ -43,18 +43,23 @@
                   style="color:#00ff88; animation: blink-active 1.5s ease-in-out infinite">
                   ◉ ACTIVO
                 </span>
+                <span v-if="event.status === 'active' && event.countdown"
+                  class="text-[8px] mono tracking-wider"
+                  style="color:rgba(0,255,136,0.5)">
+                  → {{ event.countdown }}
+                </span>
               </div>
               <div class="text-sm font-bold mt-1 leading-tight"
                 :class="[
                   event.status === 'active'  ? 'text-white' : '',
                   event.status === 'done'    ? 'text-slate-500' : '',
-                  event.status === 'pending' ? 'text-slate-700' : '',
+                  event.status === 'pending' ? 'text-slate-500' : '',
                 ]"
                 :style="event.status === 'active' ? 'text-shadow: 0 0 8px rgba(255,255,255,0.3)' : ''">
                 {{ event.label }}
               </div>
               <div class="text-[11px] mt-0.5 leading-snug"
-                :style="{ color: event.status === 'pending' ? '#2a4055' : '#6a9ab8' }">
+                :style="{ color: event.status === 'pending' ? '#4a6880' : '#6a9ab8' }">
                 {{ event.desc }}
               </div>
             </div>
@@ -127,15 +132,28 @@ const EVENTS = [
 
 const elapsedDays = computed(() => (now.value - MISSION_EPOCH) / 86400000)
 
+function fmtCountdown(remainingDays) {
+  const totalSecs = Math.max(0, Math.round(remainingDays * 86400))
+  const h = Math.floor(totalSecs / 3600)
+  const m = Math.floor((totalSecs % 3600) / 60)
+  const s = totalSecs % 60
+  return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`
+}
+
 const timeline = computed(() =>
   EVENTS.map((e, i) => {
     const d = elapsedDays.value
     const nextEpoch = EVENTS[i + 1]?.epoch ?? 11
-    let status
-    if (d >= nextEpoch) status = 'done'
-    else if (d >= e.epoch) status = 'active'
-    else status = 'pending'
-    return { ...e, status }
+    let status, countdown
+    if (d >= nextEpoch) {
+      status = 'done'
+    } else if (d >= e.epoch) {
+      status = 'active'
+      countdown = fmtCountdown(nextEpoch - d)
+    } else {
+      status = 'pending'
+    }
+    return { ...e, status, countdown }
   })
 )
 </script>
