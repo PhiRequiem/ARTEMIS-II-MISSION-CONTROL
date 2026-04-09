@@ -131,9 +131,9 @@ export function useMissionData() {
   }
 
   onMounted(() => {
-    // Telemetry: update every 30s (pure local calculation, no network)
+    // Telemetry: update every 1s (pure local calculation, no network)
     refreshTelemetry()
-    telemetryTimer = setInterval(refreshTelemetry, 30_000)
+    telemetryTimer = setInterval(refreshTelemetry, 1000)
 
     // DONKI: once at boot, then every 20min to stay under rate limit
     fetchDONKI().catch(() => {})
