@@ -24,8 +24,8 @@
           <span class="text-sm mono ml-1" style="color:#4e7a94">{{ m.unit }}</span>
         </div>
         <div class="flex items-center gap-1 mt-1">
-          <span v-if="m.trend === 'down'"   class="text-green-400 text-xs font-bold">↑</span>
-          <span v-if="m.trend === 'up'" class="text-amber-400 text-xs font-bold">↓</span>
+          <span v-if="m.trend === 'up'"   class="text-green-400 text-xs font-bold">↑</span>
+          <span v-if="m.trend === 'down'" class="text-amber-400 text-xs font-bold">↓</span>
           <!-- <span v-if="m.trend === 'up'"   class="text-green-400 text-xs font-bold">↑</span>
           <span v-if="m.trend === 'down'" class="text-amber-400 text-xs font-bold">↓</span> -->
           <span v-if="m.trend === 'flat'" class="text-xs" style="color:#4e7a94">—</span>
@@ -81,8 +81,8 @@ const metrics = computed(() => {
       unit: 'km',
       color: '#c4b5fd',
       trend: distTrend,
-      status: distTrend === 'down' ? 'AUMENTANDO' : 'REDUCIÉNDOSE',
-      // status: distTrend === 'up' ? 'AUMENTANDO' : 'REDUCIÉNDOSE',
+      //status: distTrend === 'down' ? 'AUMENTANDO' : 'REDUCIÉNDOSE',
+      status: distTrend === 'up' ? 'AUMENTANDO' : 'REDUCIÉNDOSE',
       statusColor: '#c4b5fd88',
     },
     {
@@ -92,8 +92,8 @@ const metrics = computed(() => {
       unit: 'km',
       color: '#94a3b8',
       trend: moonTrend,
-      status: moonTrend === 'up' ? 'REDUCIENDO' : 'AUMENTANDO',
-      // status: moonTrend === 'down' ? 'REDUCIENDO' : 'AUMENTANDO',
+      //status: moonTrend === 'up' ? 'REDUCIENDO' : 'AUMENTANDO',
+      status: moonTrend === 'down' ? 'REDUCIENDO' : 'AUMENTANDO',
       statusColor: '#94a3b888',
     },
     {
