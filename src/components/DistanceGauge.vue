@@ -108,7 +108,7 @@ const dataSourceLabel = computed(() =>
 )
 
 function fmtNum(n) {
-  if (!n) return '--'
+  if (n === undefined || n === null) return '--'
   return Number(n).toLocaleString('en-US')
 }
 </script>

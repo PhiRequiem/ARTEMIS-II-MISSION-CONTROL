@@ -137,7 +137,8 @@ const returnPath   = computed(() => makePath(returnPt))
 
 const progress = computed(() => {
   const d = (now.value - MISSION_EPOCH) / 86400000
-  return Math.max(0, Math.min(1, d / 10))
+  if (d >= 9.05) return 1.0
+  return Math.max(0, Math.min(1, d / 9.05))
 })
 
 const completedPath = computed(() => {

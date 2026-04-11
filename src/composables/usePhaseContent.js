@@ -16,12 +16,12 @@ const T = {
   BLACKOUT_END:    5.763 * 86400,  // +11 min from closest (~22 min)
   RETURN_BURN:     6.5  * 86400,   // TEI burn
   MCC3:            8.0  * 86400,   // Mid-course return
-  ENTRY_MINUS_1H:  9.4  * 86400,   // Entry interface -1h
-  ENTRY_INTERFACE: 9.5  * 86400,   // EI ~120km altitude
-  PEAK_HEATING:    9.508 * 86400,  // ~7 min after EI
-  CHUTE_DEPLOY:    9.52 * 86400,   // Parachute deploy
-  SPLASHDOWN:      9.54 * 86400,   // Splashdown
-  MISSION_END:     9.6  * 86400,
+  ENTRY_MINUS_1H:  8.95 * 86400,   // Entry interface -1h
+  ENTRY_INTERFACE: 9.0  * 86400,   // EI ~120km altitude
+  PEAK_HEATING:    9.008 * 86400,  // ~7 min after EI
+  CHUTE_DEPLOY:    9.02 * 86400,   // Parachute deploy
+  SPLASHDOWN:      9.04 * 86400,   // Splashdown
+  MISSION_END:     9.05 * 86400,
 }
 
 export function ms2s(ms) { return ms / 1000 }
@@ -270,6 +270,22 @@ export function usePhaseContent() {
           { label: 'SPLASHDOWN',value: 'T-' + fmtHMS(secUntil('SPLASHDOWN')), color: '#a78bfa' },
           { label: 'ZONA RECUP',value: '28°N 122°W', color: '#c4b5fd' },
           { label: 'ESCUDO',    value: 'NOMINAL', color: '#34d399' },
+        ],
+      }
+    }
+
+    // ── COMPLETE ──
+    if (ph === 'complete') {
+      return {
+        type: 'complete',
+        severity: 'complete',
+        title: '🎉 MISIÓN COMPLETADA',
+        subtitle: 'Orion recuperada · Objetivos técnicos cumplidos',
+        lines: [
+          { label: 'STATUS',    value: 'RECUPERADA ✓', color: '#34d399' },
+          { label: 'UBICACIÓN', value: 'Base Naval', color: '#a78bfa' },
+          { label: 'DATOS',     value: 'ANALIZANDO', color: '#fbbf24' },
+          { label: 'MISIÓN',    value: 'ÉXITO', color: '#34d399' },
         ],
       }
     }
