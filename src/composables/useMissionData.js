@@ -35,24 +35,30 @@ export function getMissionDay() {
 }
 
 export function getFallbackForDay(day) {
-  const d = FALLBACK_DATA.find(f => f.day === day) || FALLBACK_DATA[0]
-  // Add interpolated/estimated values
+  const d = FALLBACK_DATA.find(f => f.day === day) || FALLBACK_DATA[FALLBACK_DATA.length - 1]
   const elapsed = (new Date() - MISSION_EPOCH) / (1000 * 60 * 60 * 24)
-  const frac = elapsed - Math.floor(elapsed)
-  // Interpolate between days
+  const frac = Math.max(0, elapsed - Math.floor(elapsed))
   const next = FALLBACK_DATA.find(f => f.day === day + 1)
-  const distEarth = next ? d.distEarth + (next.distEarth - d.distEarth) * frac : d.distEarth
-  const distMoon  = next ? d.distMoon  + (next.distMoon  - d.distMoon)  * frac : d.distMoon
-  const vel       = next ? d.vel       + (next.vel       - d.vel)       * frac : d.vel
+  
+  let distEarth = next ? d.distEarth + (next.distEarth - d.distEarth) * frac : d.distEarth
+  let distMoon  = next ? d.distMoon  + (next.distMoon  - d.distMoon)  * frac : d.distMoon
+  let vel       = next ? d.vel       + (next.vel       - d.vel)       * frac : d.vel
+  let phase     = d.phase
+
+  if (elapsed >= 9.05) {
+    distEarth = 0
+    vel = 0
+    phase = 'splashdown'
+  }
 
   return {
     distEarth:   Math.round(distEarth),
     distMoon:    Math.round(distMoon),
     vel:         vel.toFixed(2),
-    tempExt:     (-90 + Math.sin(elapsed * 0.7) * 40).toFixed(1),
-    tempCabin:   (20 + Math.sin(elapsed * 0.3) * 3).toFixed(1),
+    tempExt:     elapsed >= 9.05 ? '20.0' : (-90 + Math.sin(elapsed * 0.7) * 40).toFixed(1),
+    tempCabin:   elapsed >= 9.05 ? '21.0' : (20 + Math.sin(elapsed * 0.3) * 3).toFixed(1),
     dsn:         (1.3 + distEarth / 400000 * 1.8).toFixed(2),
-    phase:       d.phase,
+    phase:       phase,
     source:      'fallback',
   }
 }

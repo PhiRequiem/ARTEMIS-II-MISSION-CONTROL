@@ -47,8 +47,8 @@ const elapsed = computed(() => (Date.now() - MISSION_EPOCH) / 86400000)
 const metrics = computed(() => {
   const t = props.telemetry || {}
   const day = getMissionDay()
-  const distE = t.distEarth || 0
-  const distM = t.distMoon  || 0
+  const distE = t.distEarth
+  const distM = t.distMoon
 
   const distTrend = elapsed.value < 6 ? 'up' : 'down'
   const moonTrend = elapsed.value < 6 ? 'down' : 'up'
@@ -67,17 +67,17 @@ const metrics = computed(() => {
     {
       id: 'alt',
       label: 'ALTITUD',
-      value: distE ? fmtNum(distE) : '--',
+      value: typeof distE === 'number' ? fmtNum(distE) : '--',
       unit: 'km',
       color: '#ffffff',
       trend: distTrend,
-      status: distE > 100000 ? 'ESPACIO PROF.' : 'ÓRB. TERRESTRE',
+      status: (distE > 100000) ? 'ESPACIO PROF.' : (distE === 0 ? 'AMARIZAJE' : 'ÓRB. TERRESTRE'),
       statusColor: '#ffffff44',
     },
     {
       id: 'distEarth',
       label: 'DIST. TIERRA',
-      value: distE ? fmtNum(distE) : '--',
+      value: typeof distE === 'number' ? fmtNum(distE) : '--',
       unit: 'km',
       color: '#c4b5fd',
       trend: distTrend,
@@ -88,7 +88,7 @@ const metrics = computed(() => {
     {
       id: 'distMoon',
       label: 'DIST. LUNA',
-      value: distM ? fmtNum(distM) : '--',
+      value: typeof distM === 'number' ? fmtNum(distM) : '--',
       unit: 'km',
       color: '#94a3b8',
       trend: moonTrend,
