@@ -1,180 +1,120 @@
 # Artemis Mission Control — Plan Multi-Misión
 
-> Estado: en progreso  
+> Estado: **v2.0 deployado en Vercel**
 > Última actualización: 2026-05-04
 
 ---
 
-## Fase 1 — Arquitectura Multi-Misión
+## ✅ Fase 1 — Arquitectura Multi-Misión
 
-### 1.1 Mission Registry
-- [x] Crear `src/missions/index.js` — registro central de misiones (id, nombre, estado, epoch, fases, crew, etc.)
-- [x] Crear `src/missions/artemis2.js` — extraer config de Artemis II (epoch, fases, fallbackData, crew)
-- [x] Crear `src/missions/artemis3.js` — config Artemis III (estado: pre-launch, fecha NET, APIs, objetivos)
-- [x] Crear `src/missions/artemis1.js` — tarjeta histórica mínima (sin dashboard completo)
-
-### 1.2 Mission Store / Composable
-- [x] Crear `src/composables/useMission.js` — misión activa global (persiste en localStorage)
-  - `activeMissionId` (ref, default: 'artemis3')
-  - `setMission(id)`
-  - `currentMission` computed (devuelve config completa)
-  - `missionState` computed ('historical' | 'pre-launch' | 'active')
-
-### 1.3 Actualizar composables existentes
-- [x] Actualizar `useMissionData.js` — lee epoch/phases/fallback desde `useMission.js` (reactive)
-- [x] Actualizar `useSystemStatus.js` — getMissionDay() ahora usa `missionEpoch` reactivo
-- [x] Actualizar `usePhaseContent.js` — usa `missionEpoch` reactivo
-- [x] Actualizar 8 componentes — reemplazados imports estáticos por refs reactivas de `useMission.js`
-  - MissionClock, TelemetryPanel, AlertsLog, DistanceGauge, MissionCost, MissionTimeline, TrajectoryMap, DSNMap
-- [x] App.vue — MET clock y splashdown countdown usan `missionEpoch` / `missionSplashdown`
-
-### 1.4 MissionSelector (componente header)
-- [x] Crear `src/components/MissionSelector.vue`
-  - Tabs o botones: ARTEMIS I · ARTEMIS II · ARTEMIS III
-  - Badge por estado: HISTORICAL / PRE-LAUNCH / ACTIVE
-  - Animación de transición al cambiar misión
-
-### 1.5 App.vue — layout condicional
-- [x] Actualizar header: título dinámico según misión activa
-- [x] Integrar `MissionSelector` en el header
-- [x] Renderizado condicional por `missionState`:
-  - `historical` → layout actual de Artemis II (paneles completos, datos congelados)
-  - `pre-launch` → layout nuevo Artemis III (ver Fase 2) ← stub funcional
-  - `active` → layout completo con APIs live
-- [x] Crear `HistoricalCard.vue` — tarjeta para Artemis I
-- [x] Crear `PreLaunchDashboard.vue` — container stub para Artemis III
+- [x] `src/missions/` — registry con `artemis1.js`, `artemis2.js`, `artemis3.js`, `index.js`
+- [x] `src/composables/useMission.js` — store global reactivo, persiste en localStorage
+  - Exports de módulo: `missionEpoch`, `missionPhases`, `missionFallback`, `missionSplashdown`
+  - `useFrozenNow()` — congela el reloj en splashdown para misiones históricas
+- [x] Actualización de 8 componentes + 3 composables — epoch dinámico, no hardcodeado
+- [x] `MissionSelector.vue` — tabs I/II/III con color permanente por misión
+- [x] `App.vue` — layout condicional: `historical` / `pre-launch` / `active`
+- [x] `applyMissionTheme()` — CSS vars + body bg + document.title + URL hash
+- [x] `HistoricalCard.vue` — tarjeta para Artemis I con highlights y watermark
+- [x] `PreLaunchDashboard.vue` — container con 6 filas de paneles
 
 ---
 
-## Fase 2 — Paneles Pre-Launch Artemis III
+## ✅ Fase 2 — Paneles Pre-Launch Artemis III
 
-### 2.1 LaunchCountdown
-- [x] Crear `src/components/artemis3/LaunchCountdown.vue`
-  - Launch Library 2 API — CORS directo, countdown si fecha confirmada, NET label si TBD
-  - Detalles: vehículo, plataforma, estado
-
-### 2.2 MissionOverview
-- [x] Crear `src/components/artemis3/MissionOverview.vue`
-  - Objetivos, vehículos (SLS/Orion/HLS), notice alunizaje movido a Artemis IV
-  - Crew TBD placeholder
-
-### 2.3 MilestoneTracker
-- [x] Crear `src/components/artemis3/MilestoneTracker.vue`
-  - Lee milestones de `mission.milestones`, barra de progreso global
-  - Done/pending con iconos
-
-### 2.4 MediaGallery
-- [x] Crear `src/components/artemis3/MediaGallery.vue`
-  - NASA Images API — grid 6 columnas, hover overlay con título
-  - Lazy loading, fallback a vacío
-
-### 2.5 A3NewsPanel
-- [x] Crear `src/components/artemis3/A3NewsPanel.vue`
-  - Fetcha `artemis/feed/` + `kennedy/feed/` via rss2json, merge y ordena por fecha
-  - Refresh cada 10 min
-
-### 2.6 A3SpaceWeather
-- [x] Crear `src/components/artemis3/A3SpaceWeather.vue`
-  - Mismo DONKI data del resto, badge "PRE-LAUNCH ENVIRONMENT MONITORING"
-
-### 2.7 PreLaunchDashboard
-- [x] Actualizar `PreLaunchDashboard.vue` — layout real con todos los paneles
-  - Row 1: LaunchCountdown (3fr) + MissionOverview (2fr)
-  - Row 2: MilestoneTracker + A3NewsPanel + A3SpaceWeather
-  - Row 3: MediaGallery (full width)
+- [x] `LaunchCountdown.vue` — Launch Library 2 API, countdown o NET label
+- [x] `MissionOverview.vue` — objetivos, vehículos, aviso Artemis IV, fuentes
+- [x] `MilestoneTracker.vue` — hitos hacia el lanzamiento con barra de progreso
+- [x] `MediaGallery.vue` — NASA Images API, grid 6 columnas, lazy loading
+- [x] `A3NewsPanel.vue` — Spaceflight News API + fallback estático 8 artículos
+- [x] `A3SpaceWeather.vue` — DONKI reutilizado con paleta A3
 
 ---
 
-## Extras post-Fase 3
+## ✅ Fase 3 — Pulido y Detalles
 
-### Fixes
-- [x] MET de Artemis II congelado en splashdown (no sigue corriendo después de la misión)
-- [x] NOMINAL deja de parpadear cuando la misión completó — status pasa a "COMPLETED" estático con dot apagado
-- [x] Links a fuentes oficiales en paneles Artemis III (NASA, SpaceX HLS, Blue Moon, La. Readiness ↗)
-
-### Tema EVA/SpaceX Artemis III
-- [x] Clase `.a3-theme` scoped al `PreLaunchDashboard` — no afecta Artemis I/II
-- [x] CSS vars `--a3-*`: panel near-black, bordes ice-blue, texto cool-white, tipografía Inter/thin weight
-- [x] Countdown font: Inter weight 200 (thin, limpio) en vez de Orbitron — estilo EVA
-- [x] `--bg-glow` azul oscuro para Artemis III
-
-## Fase 3 — Pulido y Detalles
-
-### 3.1 Transiciones
-- [x] Animación fade + slide al cambiar de misión (`<Transition name="mission" mode="out-in">` con key por misión)
-- [x] CSS variables dinámicas — `--accent`, `--accent-dim`, `--accent-glow`, `--accent-border`, `--bg-glow` se actualizan con `watch(currentMission)`
-- [x] Background gradient del body usa `var(--bg-glow)` → cambia de violeta → cyan → naranja según misión
-
-### 3.2 Artemis I — Tarjeta histórica
-- [x] `HistoricalCard.vue` funcional con highlights, crew, datos de la misión
-- [x] Watermark "HISTORICAL" diagonal en el fondo del panel
-
-### 3.3 Responsive / mobile
-- [x] `MissionSelector` en mobile: muestra solo número romano (I/II/III) + badge en pantallas ≤480px
-
-### 3.4 Accesibilidad y UX
-- [x] `document.title` se actualiza al cambiar de misión
-- [x] URL hash (`#artemis2`, `#artemis3`) se actualiza y se restaura al cargar la página
+- [x] Transición fade+slide al cambiar de misión (`<Transition name="mission" mode="out-in">`)
+- [x] CSS vars dinámicas por misión — acento, background, glow
+- [x] Fondo del `body` cambia con cada misión (seteo directo en JS)
+- [x] `HistoricalCard` con watermark diagonal "HISTORICAL"
+- [x] `MissionSelector` responsive — solo romano en mobile ≤520px
+- [x] `document.title` y URL hash actualizados al cambiar misión
+- [x] **Fix:** MET de Artemis II congelado en splashdown — `useFrozenNow()`
+- [x] **Fix:** NOMINAL deja de parpadear — status `COMPLETED` con dot estático
+- [x] **Fix:** Contraste WCAG AA en todos los textos del tema A3 (ratios verificados)
+- [x] **Fix:** `--bg` del body no reactivo — seteo directo con `document.body.style`
+- [x] **Fix:** CSS vars de A3 no contaminan Artemis II al cambiar de misión
 
 ---
 
-## Fase 4 — Features de Datos (en progreso)
+## ✅ Fase 4 — Features de Datos
 
-### 4.1 NASA TV / Live Stream
-- [x] Crear `src/components/artemis3/NASATVPanel.vue`
-  - YouTube embed canal NASA (`UCNwkvBoDag92nHiZBzbYicA`)
-  - Activo cuando hay evento en vivo, placeholder cuando no
-  - Link a NASA+ y calendario de eventos
-
-### 4.2 Hardware Tracker
-- [x] Crear `src/components/artemis3/HardwareTracker.vue`
-  - RSS NASA filtrado por SLS / Orion / HLS via Spaceflight News API
-  - Cards de estado por componente: SLS Core, Orion CM-004, HLS SpaceX, HLS Blue Origin
-  - Estado estático (config) + últimas noticias por hardware
-
-### 4.3 Comparador de Misiones
-- [x] Crear `src/components/artemis3/MissionComparator.vue`
-  - Tabla Artemis I / II / III lado a lado
-  - Datos: duración, distancia, tripulación, objetivos, costos, vehículo
-  - Lee de los mission configs (no hardcoded)
-
-### 4.4 Panel de Costos Artemis III
-- [x] Crear `src/components/artemis3/A3CostPanel.vue`
-  - Estimados de costo Artemis III basados en reportes OIG/GAO
-  - Comparativa vs Artemis I y II
-  - Link a fuentes oficiales (OIG reports)
-
-### 4.5 Exploración Lunar — Artemis IV Preview
-- [x] Crear `src/components/artemis3/LunarSitePanel.vue`
-  - Sitios candidatos polo sur lunar (datos NASA confirmados)
-  - Mini SVG del polo sur con marcadores
-  - Contexto: por qué el polo sur, agua helada, etc.
-
-### 4.6 Actualizar PreLaunchDashboard
-- [x] Integrar todos los paneles nuevos en el layout
-- [ ] Nuevo layout: 5 filas con todos los paneles
+- [x] `NASATVPanel.vue` — YouTube playlist uploads NASA, sin proxy
+- [x] `HardwareTracker.vue` — 4 cards de estado + noticias SNAPI + fallback estático
+- [x] `MissionComparator.vue` — tabla I/II/III: 11 filas, zebra, columnas color-coded
+- [x] `A3CostPanel.vue` — costos estimados, desglose, acumulado programa (~$93.4B), links OIG/GAO
+- [x] `LunarSitePanel.vue` — SVG polo sur, 9 sitios candidatos, PSR, por qué el polo sur
 
 ---
 
-## APIs Integradas
+## ✅ Fase 5 — Tema A3 (Wall-E palette)
 
-| API | Misión | CORS | Proxy |
-|-----|--------|------|-------|
-| JPL Horizons | Artemis II (live) | No | rss2json / interno |
-| NASA DONKI | Todas | Sí | No |
-| NASA RSS (artemis/feed) | Artemis III pre-launch | No | rss2json |
-| NASA RSS (kennedy/feed) | Artemis III pre-launch | No | rss2json |
-| Launch Library 2 | Artemis III | Sí | No |
-| NASA Images API | Artemis III | Sí | No |
-| YouTube embed | Artemis III (launch day) | Sí | No |
+- [x] Fondo página Artemis III: `#83b0b5` (steel blue)
+- [x] Cards blancas `#ffffff` flotando sobre el fondo — `box-shadow` sutil
+- [x] Strip de color en panel-title (amber / teal / navy) identifica cada panel
+- [x] Contraste WCAG AA verificado con cálculos reales (todos ≥4.5:1)
+- [x] Paleta: `#1d3a4d` navy · `#83b0b5` steel · `#7facaf` teal · `#e3a957` amber · `#f9f1d3` cream · `#b35a3c` rust
+- [x] Tile classes: `.tile-warm` / `.tile-cool` / `.tile-dark` en PreLaunchDashboard
+- [x] `MissionOverview` totalmente reescrito con variables `--t-*`
 
 ---
 
-## Notas de contexto
+## ✅ Fixes de Producción / Deploy
 
-- Artemis III **ya no incluye alunizaje** (anunciado 27 Feb 2026 por Jared Isaacman)
-- Alunizaje movido a **Artemis IV (~2028)**
-- Artemis III target: **finales de 2027** (NET declarado a Congreso el 27 Abr 2026)
-- SLS Block 1 core stage llegó a KSC el 27-28 Abr 2026
-- Orion CM-004 production readiness target: Enero 2028
-- Crew: **no anunciado aún**
+- [x] `A3NewsPanel` — fallback 8 artículos reales cuando SNAPI falla en Vercel
+- [x] `HardwareTracker` — fallback 5 noticias reales cuando SNAPI falla
+- [x] Reemplazado `AbortSignal.timeout()` por `AbortController` manual (compatibilidad)
+- [x] URL OIG IG-22-003 actualizada a `/2024/02/` (ruta movida por NASA)
+- [x] `rss2json` eliminado — reemplazado por APIs directas sin proxy
+
+---
+
+## ✅ UX / Meta
+
+- [x] `MissionSelector` rediseñado — número romano prominente, borde de color permanente, glow activo
+- [x] Meta tags actualizados para dashboard multi-misión (og:title, og:description, twitter:card)
+- [x] `index.html` título → "Artemis Mission Control"
+
+---
+
+## APIs en producción
+
+| API | Uso | CORS | Fallback |
+|-----|-----|------|---------|
+| Launch Library 2 | Countdown A3 | ✓ | NET label estático |
+| NASA DONKI | Space weather todas | ✓ | Datos estáticos |
+| NASA Images API | Galería A3 | ✓ | Grid vacío |
+| Spaceflight News API | News + Hardware | ✓ | Artículos hardcodeados |
+| YouTube embed | NASA TV A3 | ✓ | — |
+| JPL Horizons | Artemis II telemetría | ✗ proxy | Fallback interpolado |
+
+---
+
+## Datos clave Artemis III
+
+- Lanzamiento: **NET Late 2027** (declarado a Congreso 27 Abr 2026)
+- Rediseño anunciado: **27 Feb 2026** — sin alunizaje, LEO rendezvous/docking
+- Alunizaje → **Artemis IV ~2028**
+- SLS Core Stage en KSC desde **27-28 Abr 2026**
+- Orion CM-004 production readiness: **Enero 2028**
+- Crew: **no anunciado**
+
+---
+
+## Pendiente / Ideas futuras
+
+- [ ] Artemis IV placeholder card (cuando haya info oficial)
+- [ ] Actualizar milestones en `artemis3.js` cuando NASA confirme hitos
+- [ ] og:image real (screenshot del dashboard como imagen de preview)
+- [ ] Crew panel Artemis III cuando NASA lo anuncie
+- [ ] Costos Artemis III cuando OIG publique reporte oficial

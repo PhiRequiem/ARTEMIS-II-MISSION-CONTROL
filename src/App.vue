@@ -135,6 +135,11 @@
         <HistoricalCard :mission="currentMission" />
       </template>
 
+      <!-- ── ARTEMIS IV: announced card ── -->
+      <template v-else-if="currentMission.state === 'announced'">
+        <AnnouncedCard :mission="currentMission" />
+      </template>
+
       <!-- ── ARTEMIS II / any active mission: full dashboard ── -->
       <template v-else-if="isHistorical || isActive">
 
@@ -269,6 +274,7 @@ import PhaseAlert         from './components/PhaseAlert.vue'
 import MissionCost        from './components/MissionCost.vue'
 import MissionSelector    from './components/MissionSelector.vue'
 import HistoricalCard     from './components/HistoricalCard.vue'
+import AnnouncedCard      from './components/AnnouncedCard.vue'
 import PreLaunchDashboard from './components/PreLaunchDashboard.vue'
 
 const { telemetry, spaceWeather, dataSource } = useMissionData()

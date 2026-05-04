@@ -49,6 +49,7 @@ export function useMission() {
   const isHistorical = computed(() => missionState.value === 'historical')
   const isPreLaunch  = computed(() => missionState.value === 'pre-launch')
   const isActive     = computed(() => missionState.value === 'active')
+  const isAnnounced  = computed(() => missionState.value === 'announced')
 
   const accentColor  = computed(() => currentMission.value.accentColor)
   const accentShadow = computed(() => currentMission.value.accentShadow)
@@ -60,6 +61,7 @@ export function useMission() {
     isHistorical,
     isPreLaunch,
     isActive,
+    isAnnounced,
     accentColor,
     accentShadow,
     setMission,

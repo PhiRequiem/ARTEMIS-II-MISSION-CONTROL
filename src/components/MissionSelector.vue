@@ -25,12 +25,13 @@ import { useMission } from '../composables/useMission.js'
 
 const { missions, activeMissionId, setMission } = useMission()
 
-const ROMAN = { artemis1: 'I', artemis2: 'II', artemis3: 'III' }
+const ROMAN = { artemis1: 'I', artemis2: 'II', artemis3: 'III', artemis4: 'IV' }
 
 const STATE_LABELS = {
   'historical': 'HIST',
   'pre-launch': 'PRE',
   'active':     'LIVE',
+  'announced':  'ANUN',
 }
 </script>
 
@@ -129,6 +130,7 @@ const STATE_LABELS = {
 }
 .btn-state.historical { color: rgba(167,139,250,0.5); background: rgba(167,139,250,0.08); }
 .btn-state.pre-launch { color: #38bdf8;               background: rgba(56,189,248,0.1);   }
+.btn-state.announced  { color: #a3e635;               background: rgba(163,230,53,0.1);   }
 .btn-state.active     {
   color: #34d399; background: rgba(52,211,153,0.1);
   animation: pulse-badge 2s ease-in-out infinite;
