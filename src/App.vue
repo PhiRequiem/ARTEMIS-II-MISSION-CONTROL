@@ -32,7 +32,7 @@
               {{ currentMission.name }} — MISSION CONTROL
             </div>
             <div class="flex items-center gap-2 mt-0.5 flex-wrap">
-              <template v-if="!isPreLaunch">
+              <template v-if="isHistorical && !isAnnounced">
                 <span class="text-[9px] mono tracking-widest" style="color:#4e4470">@</span>
                 <StatusBadge :label="overallStatus"  :color="overallColor.color"  :shadow="overallColor.shadow" />
                 <span class="text-[9px]" style="color:#2a2040">·</span>
@@ -42,7 +42,7 @@
               </template>
               <template v-else>
                 <span class="text-[9px] mono tracking-widest" :style="{ color: accentColor, opacity: 0.6 }">
-                  PRE-LAUNCH · {{ currentMission.netLabel ?? 'NET TBD' }}
+                  {{ overallStatus }} · {{ currentMission.netLabel ?? (isAnnounced ? 'NET ~2028' : 'NET TBD') }}
                 </span>
               </template>
             </div>
@@ -57,17 +57,19 @@
         <div class="w-px h-7 shrink-0" style="background:rgba(167,139,250,0.12)" />
 
         <!-- Status dot -->
-        <div class="flex items-center gap-2 shrink-0" v-if="!isPreLaunch">
-          <div class="status-dot"
-            :class="overallStatus === 'COMPLETED' ? 'done' : overallStatus === 'CRITICAL' ? 'red' : overallStatus === 'NOMINAL' ? '' : 'amber'" />
+        <div class="flex items-center gap-2 shrink-0">
+          <template v-if="isHistorical">
+            <div class="status-dot"
+              :class="overallStatus === 'COMPLETED' ? 'done' : overallStatus === 'CRITICAL' ? 'red' : overallStatus === 'NOMINAL' ? '' : 'amber'" />
+          </template>
+          <template v-else>
+            <div class="w-2 h-2 rounded-full animate-pulse"
+              :style="`background:${accentColor}; box-shadow:0 0 8px ${accentShadow}`" />
+          </template>
           <span class="mono text-xs font-bold tracking-widest"
             :style="{ color: overallColor.color, textShadow: `0 0 10px ${overallColor.shadow}` }">
             {{ overallStatus }}
           </span>
-        </div>
-        <div class="flex items-center gap-2 shrink-0" v-else>
-          <div class="w-2 h-2 rounded-full animate-pulse" :style="`background:${accentColor}; box-shadow:0 0 8px ${accentShadow}`" />
-          <span class="mono text-xs font-bold tracking-widest" :style="{ color: accentColor }">STANDBY</span>
         </div>
 
         <div class="flex-1" />
@@ -281,7 +283,7 @@ import PreLaunchDashboard from './components/PreLaunchDashboard.vue'
 
 const { telemetry, spaceWeather, dataSource } = useMissionData()
 const { vehicleStatus, crewStatus, dispose: disposeStatus } = useSystemStatus()
-const { currentMission, missionState, isHistorical, isPreLaunch, isActive, accentColor, accentShadow, setMission } = useMission()
+const { currentMission, missionState, isHistorical, isPreLaunch, isActive, isAnnounced, accentColor, accentShadow, setMission } = useMission()
 onUnmounted(disposeStatus)
 
 // ── Dynamic CSS vars + title + URL hash ───────────────────────────────────
@@ -311,15 +313,19 @@ onMounted(() => {
 })
 
 const STATUS_COLOR = {
-  NOMINAL:    { color: '#34d399', shadow: 'rgba(52,211,153,0.5)'  },
-  CAUTION:    { color: '#fbbf24', shadow: 'rgba(251,191,36,0.5)'  },
-  ADVISORY:   { color: '#fbbf24', shadow: 'rgba(251,191,36,0.5)'  },
-  CRITICAL:   { color: '#f87171', shadow: 'rgba(248,113,113,0.5)' },
-  COMPLETED:  { color: '#34d399', shadow: 'rgba(52,211,153,0.3)'  },
+  NOMINAL:     { color: '#34d399', shadow: 'rgba(52,211,153,0.5)'   },
+  CAUTION:     { color: '#fbbf24', shadow: 'rgba(251,191,36,0.5)'   },
+  ADVISORY:    { color: '#fbbf24', shadow: 'rgba(251,191,36,0.5)'   },
+  CRITICAL:    { color: '#f87171', shadow: 'rgba(248,113,113,0.5)'  },
+  COMPLETED:   { color: '#34d399', shadow: 'rgba(52,211,153,0.3)'   },
+  'PRE-LAUNCH':{ color: '#38bdf8', shadow: 'rgba(56,189,248,0.4)'   },
+  ANNOUNCED:   { color: '#a3e635', shadow: 'rgba(163,230,53,0.4)'   },
 }
 const vehicleColor  = computed(() => STATUS_COLOR[vehicleStatus.value]  ?? STATUS_COLOR.NOMINAL)
 const crewColor     = computed(() => STATUS_COLOR[crewStatus.value]     ?? STATUS_COLOR.NOMINAL)
 const overallStatus = computed(() => {
+  if (isPreLaunch.value)  return 'PRE-LAUNCH'
+  if (isAnnounced.value)  return 'ANNOUNCED'
   if (isMissionComplete.value) return 'COMPLETED'
   if (vehicleStatus.value === 'CRITICAL' || crewStatus.value === 'CRITICAL') return 'CRITICAL'
   if (vehicleStatus.value === 'CAUTION'  || crewStatus.value === 'CAUTION')  return 'CAUTION'

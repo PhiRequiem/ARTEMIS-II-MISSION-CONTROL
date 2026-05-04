@@ -39,8 +39,7 @@
 import { ref, onMounted, onUnmounted } from 'vue'
 import { useMission } from '../composables/useMission.js'
 
-const STORAGE_KEY = 'artemis_hint_seen'
-const DURATION    = 9000  // ms antes de auto-cerrar
+const DURATION = 9000  // ms antes de auto-cerrar
 
 const { missions, setMission } = useMission()
 const ROMAN = { artemis1: 'I', artemis2: 'II', artemis3: 'III', artemis4: 'IV' }
@@ -55,7 +54,6 @@ let start    = null
 
 function dismiss() {
   visible.value = false
-  localStorage.setItem(STORAGE_KEY, '1')
   cancelAnimationFrame(rafId)
   clearTimeout(timer)
 }
@@ -77,8 +75,6 @@ function tick(ts) {
 }
 
 onMounted(() => {
-  if (localStorage.getItem(STORAGE_KEY)) return
-  // Pequeño delay para que el usuario vea el dashboard primero
   timer = setTimeout(() => {
     visible.value = true
     rafId = requestAnimationFrame(tick)
