@@ -11,15 +11,17 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.svg', 'og-image.svg'],
       manifest: {
-        name: 'Artemis II — Mission Control',
-        short_name: 'ARTEMIS II',
-        description: 'Dashboard de misión lunar en tiempo real para Artemis II.',
+        name: 'Artemis Mission Control',
+        short_name: 'Artemis MC',
+        description: 'Dashboard interactivo del programa lunar Artemis — I, II, III y IV.',
         theme_color: '#0d0d14',
         background_color: '#0d0d14',
         display: 'standalone',
         orientation: 'landscape',
         start_url: '/',
         scope: '/',
+        categories: ['education', 'science', 'space'],
+        lang: 'es',
         icons: [
           {
             src: 'pwa-192.png',

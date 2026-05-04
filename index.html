@@ -4,47 +4,85 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <!-- ── Primary meta ──────────────────────────────── -->
+    <!-- ── Primary ─────────────────────────────────────── -->
     <title>Artemis Mission Control</title>
     <meta name="description"
-      content="Dashboard interactivo del programa Artemis de NASA. Artemis I y II históricos con telemetría real, Artemis III pre-launch con hardware tracker, costos, polo sur lunar y más. Por PhiRequiem." />
-    <meta name="author" content="PhiRequiem" />
-    <meta name="keywords"
-      content="Artemis, Artemis II, Artemis III, NASA, mission control, dashboard, lunar, Orion, SLS, SpaceX, HLS, misión lunar, telemetría, polo sur" />
-    <meta name="theme-color" content="#0d0d14" />
-    <meta name="color-scheme" content="dark" />
+      content="Dashboard interactivo del programa lunar Artemis de NASA. Artemis I y II históricos con telemetría real, Artemis III pre-launch con hardware tracker, costos del programa, polo sur lunar y más." />
+    <meta name="author"   content="PhiRequiem" />
+    <meta name="keywords" content="Artemis, Artemis II, Artemis III, Artemis IV, NASA, mission control, dashboard, lunar, Orion, SLS, SpaceX HLS, misión lunar, telemetría, polo sur, alunizaje" />
+    <meta name="robots"   content="index, follow" />
+    <link rel="canonical" href="https://artemis-ii-mission-control.vercel.app/" />
 
-    <!-- ── Open Graph (Facebook, LinkedIn, WhatsApp) ─── -->
+    <!-- ── Theme / PWA ──────────────────────────────────── -->
+    <meta name="theme-color"   content="#0d0d14" />
+    <meta name="color-scheme"  content="dark" />
+    <meta name="mobile-web-app-capable"          content="yes" />
+    <meta name="apple-mobile-web-app-capable"    content="yes" />
+    <meta name="apple-mobile-web-app-title"      content="Artemis MC" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <link rel="apple-touch-icon" href="/pwa-192.png" />
+
+    <!-- ── Open Graph ──────────────────────────────────── -->
     <meta property="og:type"        content="website" />
     <meta property="og:site_name"   content="Artemis Mission Control" />
-    <meta property="og:title"       content="🚀 Artemis Mission Control" />
-    <meta property="og:description"
-      content="Dashboard interactivo del programa lunar Artemis. Artemis I y II históricos con telemetría real · Artemis III pre-launch con hardware, costos, polo sur y más." />
+    <meta property="og:title"       content="🚀 Artemis Mission Control — NASA Program Dashboard" />
+    <meta property="og:description" content="Dashboard interactivo del programa Artemis. Artemis I/II históricos con telemetría real · Artemis III pre-launch · Artemis IV primer alunizaje. Costos NASA OIG, hardware tracker, polo sur lunar." />
     <meta property="og:url"         content="https://artemis-ii-mission-control.vercel.app" />
-    <meta property="og:image"
-      content="https://artemis-ii-mission-control.vercel.app/og-image.svg" />
-    <meta property="og:image:width"  content="1200" />
+    <meta property="og:image"       content="https://artemis-ii-mission-control.vercel.app/api/og" />
+    <meta property="og:image:type"  content="image/png" />
+    <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
-    <meta property="og:image:alt"
-      content="Artemis II Mission Control Dashboard — telemetría en tiempo real" />
+    <meta property="og:image:alt"   content="Artemis Mission Control — Dashboard de las misiones I, II, III y IV del programa lunar de NASA" />
     <meta property="og:locale"      content="es_MX" />
+    <meta property="og:locale:alternate" content="en_US" />
 
-    <!-- ── Twitter / X Card ──────────────────────────── -->
+    <!-- ── Twitter / X ─────────────────────────────────── -->
     <meta name="twitter:card"        content="summary_large_image" />
     <meta name="twitter:site"        content="@PhiRequiem" />
     <meta name="twitter:creator"     content="@PhiRequiem" />
-    <meta name="twitter:title"       content="🚀 Artemis Mission Control" />
-    <meta name="twitter:description"
-      content="Dashboard del programa lunar Artemis — Artemis I/II históricos con telemetría real · Artemis III pre-launch con hardware tracker, costos y polo sur lunar." />
-    <meta name="twitter:image"
-      content="https://artemis-ii-mission-control.vercel.app/og-image.svg" />
-    <meta name="twitter:image:alt"
-      content="Artemis II Mission Control Dashboard" />
+    <meta name="twitter:title"       content="🚀 Artemis Mission Control — NASA Program Dashboard" />
+    <meta name="twitter:description" content="Dashboard del programa lunar Artemis — I/II históricos · III pre-launch · IV anunciada. Telemetría, hardware tracker, costos OIG y polo sur lunar." />
+    <meta name="twitter:image"       content="https://artemis-ii-mission-control.vercel.app/api/og" />
+    <meta name="twitter:image:alt"   content="Artemis Mission Control Dashboard" />
 
-    <!-- ── Favicon ───────────────────────────────────── -->
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <!-- ── JSON-LD Structured Data ─────────────────────── -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "Artemis Mission Control",
+      "alternateName": "Artemis MC",
+      "url": "https://artemis-ii-mission-control.vercel.app",
+      "description": "Dashboard interactivo del programa lunar Artemis de NASA. Cubre las misiones Artemis I, II, III y IV con telemetría histórica, hardware tracker, costos oficiales y datos de exploración lunar.",
+      "applicationCategory": "EducationApplication",
+      "applicationSubCategory": "Space Exploration",
+      "operatingSystem": "Any",
+      "inLanguage": ["es", "en"],
+      "isAccessibleForFree": true,
+      "author": {
+        "@type": "Person",
+        "name": "PhiRequiem",
+        "url": "https://github.com/PhiRequiem"
+      },
+      "publisher": {
+        "@type": "Person",
+        "name": "PhiRequiem"
+      },
+      "about": {
+        "@type": "Thing",
+        "name": "Programa Artemis",
+        "description": "Programa de exploración lunar humana de NASA",
+        "sameAs": "https://www.nasa.gov/humans-in-space/artemis/"
+      },
+      "keywords": "Artemis, NASA, lunar, mission control, telemetría, Orion, SLS, SpaceX HLS"
+    }
+    </script>
 
-    <!-- ── Google Analytics ──────────────────────────── -->
+    <!-- ── Favicon ──────────────────────────────────────── -->
+    <link rel="icon"      type="image/svg+xml" href="/favicon.svg" />
+    <link rel="shortcut icon"                  href="/favicon.svg" />
+
+    <!-- ── Google Analytics ─────────────────────────────── -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-TBBTDV8N2X"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
@@ -53,10 +91,10 @@
       gtag('config', 'G-TBBTDV8N2X');
     </script>
 
-    <!-- ── Fonts ─────────────────────────────────────── -->
+    <!-- ── Fonts ────────────────────────────────────────── -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Share+Tech+Mono&family=Orbitron:wght@400;600;700;900&display=swap"
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Share+Tech+Mono&family=Orbitron:wght@400;600;700;900&display=swap"
       rel="stylesheet" />
   </head>
   <body class="bg-black">
