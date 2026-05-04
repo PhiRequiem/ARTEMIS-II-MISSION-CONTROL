@@ -7,6 +7,7 @@
     --accent-dim:    #7c5ccc;
     --accent-glow:   rgba(167,139,250,0.35);
     --accent-border: rgba(167,139,250,0.22);
+    --bg-glow:       rgba(124,92,204,0.18);
     --green:         #34d399;   /* emerald-400 */
     --amber:         #fbbf24;   /* amber-400   */
     --red:           #f87171;   /* red-400     */
@@ -21,6 +22,7 @@
 
   body {
     background: var(--bg);
+    transition: background 0.4s ease;
     color: var(--text-primary);
     font-family: 'Inter', 'Share Tech Mono', sans-serif;
     overflow-x: hidden;
@@ -28,8 +30,8 @@
     line-height: 1.5;
     /* Subtle purple radial glow — like Vite */
     background-image:
-      radial-gradient(ellipse 70% 40% at 50% -5%, rgba(124,92,204,0.18) 0%, transparent 65%),
-      radial-gradient(ellipse 40% 30% at 85% 110%, rgba(109,40,217,0.10) 0%, transparent 60%);
+      radial-gradient(ellipse 70% 40% at 50% -5%, var(--bg-glow) 0%, transparent 65%),
+      radial-gradient(ellipse 40% 30% at 85% 110%, var(--bg-glow) 0%, transparent 60%);
     background-attachment: fixed;
   }
 
@@ -104,7 +106,140 @@
     background: var(--red);
     box-shadow: 0 0 6px var(--red), 0 0 14px rgba(248,113,113,0.35);
   }
+  .status-dot.done {
+    background: var(--green);
+    box-shadow: 0 0 4px rgba(52,211,153,0.3);
+    animation: none;
+    opacity: 0.6;
+  }
 }
+
+/* ──────────────────────────────────────────────────────────────────────────
+   A3 THEME — White cards on cream
+   Fondo: #f9f1d3  Cards: #ffffff  Strips: amber/steel/navy
+   Texto: #1d3a4d  Links: #b35a3c
+   ────────────────────────────────────────────────────────────────────────── */
+
+.a3-theme {
+  --a3-cream:  #f9f1d3;
+  --a3-navy:   #1d3a4d;
+  --a3-steel:  #83b0b5;
+  --a3-teal:   #7facaf;
+  --a3-amber:  #e3a957;
+  --a3-rust:   #b35a3c;
+  --a3-radius: 10px;
+}
+
+/* ── Tile tokens: todas las cards son blancas, el strip cambia ── */
+.a3-theme .panel {
+  --t-strip:      #83b0b5;   /* steel = default strip */
+  --t-strip-text: #1d3a4d;   /* navy — contraste 5.01 sobre steel ✓ */
+  --t-strip-sub:  rgba(29,58,77,0.55);
+  --t-bg:         #ffffff;
+  --t-hi:         #1d3a4d;
+  --t-text:       #1d3a4d;   /* contraste 11.9 sobre white ✓ */
+  --t-dim:        #3a6070;   /* contraste ~5.5 sobre white ✓ */
+  --t-mute:       #507080;   /* contraste 5.29 sobre white ✓ */
+  --t-link:       #b35a3c;   /* contraste 4.72 sobre white ✓ */
+  --t-cell:       #f0ece0;
+  --t-border:     rgba(29,58,77,0.12);
+}
+.a3-theme .panel.tile-warm {
+  --t-strip:      #e3a957;
+  --t-strip-text: #1d3a4d;   /* contraste 5.71 sobre amber ✓ */
+  --t-strip-sub:  rgba(29,58,77,0.55);
+  --t-hi:         #b35a3c;
+}
+.a3-theme .panel.tile-cool {
+  --t-strip:      #7facaf;
+  --t-strip-text: #1d3a4d;   /* contraste 4.77 sobre teal ✓ */
+  --t-strip-sub:  rgba(29,58,77,0.55);
+  --t-hi:         #1d3a4d;
+}
+.a3-theme .panel.tile-dark {
+  --t-strip:      #1d3a4d;
+  --t-strip-text: #f9f1d3;   /* contraste 10.51 sobre navy ✓ */
+  --t-strip-sub:  rgba(249,241,211,0.65);
+  --t-hi:         #e3a957;
+  --t-bg:         #ffffff;
+}
+
+/* ── Panel shell ── */
+.a3-theme .panel {
+  background: var(--t-bg);
+  border: 1px solid var(--t-border);
+  border-radius: var(--a3-radius);
+  box-shadow: 0 1px 3px rgba(29,58,77,0.08), 0 4px 16px rgba(29,58,77,0.06);
+  overflow: hidden;
+  color: var(--t-text);
+}
+.a3-theme .panel::before { display: none; }
+
+/* ── Panel title: strip de color arriba ── */
+.a3-theme .panel-title {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--t-strip-text);
+  background: var(--t-strip);
+  border-bottom: none;
+  padding: 0.65rem 1rem;
+}
+.a3-theme .panel-title::before { display: none; }
+.a3-theme .panel-title.a3 { color: var(--t-strip-text); }
+.a3-theme .panel-title .ml-auto { color: var(--t-strip-sub); }
+
+/* ── Links ── */
+.a3-theme a { color: var(--t-link); }
+.a3-theme a:hover { color: #1d3a4d; }
+
+/* ── Inner cells ── */
+.a3-theme .detail-cell,
+.a3-theme .vehicle-card {
+  background: var(--t-cell);
+  border: 1px solid var(--t-border);
+  border-radius: 6px;
+}
+.a3-theme .milestone-row { border-radius: 6px; }
+.a3-theme .milestone-row.done {
+  background: rgba(131,176,181,0.12);
+  border-color: rgba(131,176,181,0.3);
+}
+.a3-theme .milestone-row.pending {
+  background: var(--t-cell);
+  border-color: var(--t-border);
+}
+.a3-theme .event-row {
+  background: var(--t-cell);
+  border: 1px solid var(--t-border);
+  border-radius: 6px;
+}
+.a3-theme .notice-bar {
+  background: rgba(227,169,87,0.12);
+  border: 1px solid rgba(227,169,87,0.4);
+  border-radius: 6px;
+}
+
+/* ── Gallery ── */
+.a3-theme .gallery-item {
+  border-radius: 6px;
+  border: 1px solid var(--t-border);
+}
+.a3-theme .gallery-item:hover {
+  border-color: var(--a3-rust);
+}
+
+/* ── News links ── */
+.a3-theme a.block { border-color: rgba(29,58,77,0.1) !important; }
+.a3-theme a.block div:first-child { color: #1d3a4d !important; }
+.a3-theme a.block:hover div:first-child { color: var(--a3-rust) !important; }
+
+/* ── Scrollbar ── */
+.a3-theme ::-webkit-scrollbar-track { background: var(--t-cell); }
+.a3-theme ::-webkit-scrollbar-thumb { background: rgba(29,58,77,0.15); border-radius: 4px; }
+.a3-theme ::-webkit-scrollbar-thumb:hover { background: rgba(29,58,77,0.25); }
 
 /* ── Scanlines (very subtle) ─────────────────────────────────────────────── */
 .scanlines-overlay {

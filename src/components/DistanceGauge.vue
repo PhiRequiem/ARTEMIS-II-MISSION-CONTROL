@@ -80,11 +80,11 @@
 
 <script setup>
 import { computed } from 'vue'
-import { MISSION_EPOCH } from '../composables/useMissionData.js'
+import { missionEpoch } from '../composables/useMission.js'
 
 const props = defineProps({ telemetry: Object, dataSource: String })
 
-const elapsed = computed(() => (Date.now() - MISSION_EPOCH) / 86400000)
+const elapsed = computed(() => (Date.now() - (missionEpoch.value ?? 0)) / 86400000)
 
 const earthPct = computed(() => Math.min(100, ((props.telemetry?.distEarth || 0) / 400000) * 100))
 const moonPct  = computed(() => Math.min(100, ((props.telemetry?.distMoon  || 0) / 384400) * 100))

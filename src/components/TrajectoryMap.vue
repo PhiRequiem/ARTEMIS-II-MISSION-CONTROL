@@ -88,7 +88,7 @@
 
 <script setup>
 import { computed, ref, onMounted, onUnmounted } from 'vue'
-import { MISSION_EPOCH, FALLBACK_DATA } from '../composables/useMissionData.js'
+import { missionEpoch, useFrozenNow } from '../composables/useMission.js'
 
 const props = defineProps({ telemetry: Object })
 
@@ -97,18 +97,7 @@ const earthCx = 72, cy = H / 2
 const moonCx  = 528
 
 // Reactive clock — updates every second so Orion moves in real-time
-const now = ref(Date.now())
-let raf = null
-let lastTick = 0
-function tick(ts) {
-  if (ts - lastTick >= 1000) {
-    now.value = Date.now()
-    lastTick = ts
-  }
-  raf = requestAnimationFrame(tick)
-}
-onMounted(() => { raf = requestAnimationFrame(tick) })
-onUnmounted(() => cancelAnimationFrame(raf))
+const now = useFrozenNow()
 
 // Control points for arcs
 const OUTBOUND_CP = { x: (earthCx + moonCx) / 2, y: 28 }
@@ -136,7 +125,9 @@ const outboundPath = computed(() => makePath(outboundPt))
 const returnPath   = computed(() => makePath(returnPt))
 
 const progress = computed(() => {
-  const d = (now.value - MISSION_EPOCH) / 86400000
+  const epoch = missionEpoch.value
+  if (!epoch) return 0
+  const d = (+now.value - +epoch) / 86400000
   if (d >= 9.05) return 1.0
   return Math.max(0, Math.min(1, d / 9.05))
 })

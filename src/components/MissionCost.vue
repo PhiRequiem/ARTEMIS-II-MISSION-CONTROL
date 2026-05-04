@@ -124,7 +124,7 @@
 
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from 'vue'
-import { MISSION_EPOCH } from '../composables/useMissionData.js'
+import { missionEpoch, useFrozenNow } from '../composables/useMission.js'
 
 // ── Constants (NASA OIG Report 2022 + GAO-23-105338) ─────────────────────────
 const TOTAL_COST   = 4_100_000_000
@@ -146,12 +146,9 @@ const METRICS = [
 ]
 
 // ── Reactive clock ────────────────────────────────────────────────────────────
-const now = ref(Date.now())
-let timer = null
-onMounted(() => { timer = setInterval(() => { now.value = Date.now() }, 1000) })
-onUnmounted(() => clearInterval(timer))
+const now = useFrozenNow()
 
-const elapsedS   = computed(() => (now.value - MISSION_EPOCH.getTime()) / 1000)
+const elapsedS   = computed(() => (+now.value - (missionEpoch.value?.getTime() ?? Date.now())) / 1000)
 const preLaunch  = computed(() => elapsedS.value < 0)
 const missionComplete = computed(() => elapsedS.value >= MISSION_SECS)
 const spent      = computed(() => {

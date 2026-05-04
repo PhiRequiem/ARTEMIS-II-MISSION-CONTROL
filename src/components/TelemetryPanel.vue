@@ -38,11 +38,12 @@
 
 <script setup>
 import { computed } from 'vue'
-import { MISSION_EPOCH, getMissionDay } from '../composables/useMissionData.js'
+import { getMissionDay } from '../composables/useMissionData.js'
+import { missionEpoch } from '../composables/useMission.js'
 
 const props = defineProps({ telemetry: Object, dataSource: String })
 
-const elapsed = computed(() => (Date.now() - MISSION_EPOCH) / 86400000)
+const elapsed = computed(() => (Date.now() - (missionEpoch.value ?? 0)) / 86400000)
 
 const metrics = computed(() => {
   const t = props.telemetry || {}

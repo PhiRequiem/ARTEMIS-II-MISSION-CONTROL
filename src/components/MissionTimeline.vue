@@ -73,12 +73,9 @@
 
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from 'vue'
-import { MISSION_EPOCH } from '../composables/useMissionData.js'
+import { missionEpoch, useFrozenNow } from '../composables/useMission.js'
 
-const now = ref(new Date())
-let timer = null
-onMounted(() => { timer = setInterval(() => now.value = new Date(), 1000) })
-onUnmounted(() => clearInterval(timer))
+const now = useFrozenNow()
 
 const MONTHS_ES = ['ENE','FEB','MAR','ABR','MAY','JUN','JUL','AGO','SEP','OCT','NOV','DIC']
 
@@ -130,7 +127,7 @@ const EVENTS = [
   },
 ]
 
-const elapsedDays = computed(() => (now.value - MISSION_EPOCH) / 86400000)
+const elapsedDays = computed(() => (now.value - (missionEpoch.value ?? now.value)) / 86400000)
 
 function fmtCountdown(remainingDays) {
   const totalSecs = Math.max(0, Math.round(remainingDays * 86400))

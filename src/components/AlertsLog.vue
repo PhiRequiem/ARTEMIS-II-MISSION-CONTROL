@@ -67,12 +67,12 @@
 </template>
 
 <script setup>
-import { MISSION_EPOCH } from '../composables/useMissionData.js'
+import { missionEpoch } from '../composables/useMission.js'
 
 const props = defineProps({ spaceWeather: Array })
 
 function metStr(d, h, m) {
-  const epoch = MISSION_EPOCH.getTime() + (d * 86400 + h * 3600 + m * 60) * 1000
+  const epoch = (missionEpoch.value?.getTime() ?? 0) + (d * 86400 + h * 3600 + m * 60) * 1000
   const date = new Date(epoch)
   const MONTHS = ['ENE','FEB','MAR','ABR','MAY','JUN','JUL','AGO','SEP','OCT','NOV','DIC']
   return `${String(date.getUTCDate()).padStart(2,'0')} ${MONTHS[date.getUTCMonth()]} ${String(date.getUTCHours()).padStart(2,'0')}:${String(date.getUTCMinutes()).padStart(2,'0')}`

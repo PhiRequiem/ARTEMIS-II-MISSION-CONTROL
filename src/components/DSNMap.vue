@@ -1,3 +1,4 @@
+import { useFrozenNow } from '../composables/useMission.js'
 <template>
   <div class="panel h-full flex flex-col">
     <div class="panel-title">
@@ -144,7 +145,6 @@
 
 <script setup>
 import { computed, ref, onMounted, onUnmounted } from 'vue'
-import { MISSION_EPOCH } from '../composables/useMissionData.js'
 
 const props = defineProps({ telemetry: Object })
 

@@ -27,30 +27,47 @@
           </svg>
           <div>
             <div class="text-white font-black tracking-widest text-sm leading-tight"
-              style="font-family:'Orbitron',monospace; letter-spacing:.2em">
-              ARTEMIS II — MISSION CONTROL
+              style="font-family:'Orbitron',monospace; letter-spacing:.2em"
+              :style="{ color: accentColor, textShadow: `0 0 16px ${accentShadow}` }">
+              {{ currentMission.name }} — MISSION CONTROL
             </div>
             <div class="flex items-center gap-2 mt-0.5 flex-wrap">
-              <span class="text-[9px] mono tracking-widest" style="color:#4e4470">@</span>
-              <StatusBadge :label="overallStatus"  :color="overallColor.color"  :shadow="overallColor.shadow" />
-              <span class="text-[9px]" style="color:#2a2040">·</span>
-              <StatusBadge label="CREW"  :suffix="crewStatus"    :color="crewColor.color"    :shadow="crewColor.shadow" />
-              <span class="text-[9px]" style="color:#2a2040">·</span>
-              <StatusBadge label="VEH"   :suffix="vehicleStatus" :color="vehicleColor.color" :shadow="vehicleColor.shadow" />
+              <template v-if="!isPreLaunch">
+                <span class="text-[9px] mono tracking-widest" style="color:#4e4470">@</span>
+                <StatusBadge :label="overallStatus"  :color="overallColor.color"  :shadow="overallColor.shadow" />
+                <span class="text-[9px]" style="color:#2a2040">·</span>
+                <StatusBadge label="CREW"  :suffix="crewStatus"    :color="crewColor.color"    :shadow="crewColor.shadow" />
+                <span class="text-[9px]" style="color:#2a2040">·</span>
+                <StatusBadge label="VEH"   :suffix="vehicleStatus" :color="vehicleColor.color" :shadow="vehicleColor.shadow" />
+              </template>
+              <template v-else>
+                <span class="text-[9px] mono tracking-widest" :style="{ color: accentColor, opacity: 0.6 }">
+                  PRE-LAUNCH · {{ currentMission.netLabel ?? 'NET TBD' }}
+                </span>
+              </template>
             </div>
           </div>
         </div>
 
         <div class="w-px h-7 shrink-0" style="background:rgba(167,139,250,0.12)" />
 
+        <!-- Mission selector -->
+        <MissionSelector class="shrink-0" />
+
+        <div class="w-px h-7 shrink-0" style="background:rgba(167,139,250,0.12)" />
+
         <!-- Status dot -->
-        <div class="flex items-center gap-2 shrink-0">
+        <div class="flex items-center gap-2 shrink-0" v-if="!isPreLaunch">
           <div class="status-dot"
-            :class="overallStatus === 'NOMINAL' ? '' : overallStatus === 'CRITICAL' ? 'red' : 'amber'" />
+            :class="overallStatus === 'COMPLETED' ? 'done' : overallStatus === 'CRITICAL' ? 'red' : overallStatus === 'NOMINAL' ? '' : 'amber'" />
           <span class="mono text-xs font-bold tracking-widest"
             :style="{ color: overallColor.color, textShadow: `0 0 10px ${overallColor.shadow}` }">
             {{ overallStatus }}
           </span>
+        </div>
+        <div class="flex items-center gap-2 shrink-0" v-else>
+          <div class="w-2 h-2 rounded-full animate-pulse" :style="`background:${accentColor}; box-shadow:0 0 8px ${accentShadow}`" />
+          <span class="mono text-xs font-bold tracking-widest" :style="{ color: accentColor }">STANDBY</span>
         </div>
 
         <div class="flex-1" />
@@ -69,10 +86,13 @@
 
         <div class="w-px h-7 shrink-0 hidden sm:block" style="background:rgba(167,139,250,0.12)" />
 
-        <!-- UTC + MET -->
+        <!-- UTC + MET / NET label -->
         <div class="text-right shrink-0">
           <div class="mono text-sm text-white font-semibold tracking-widest">{{ headerDate }} {{ utc }} UTC</div>
-          <div class="mono text-xs tracking-widest" style="color:#a78bfa">MET {{ met }}</div>
+          <div v-if="isPreLaunch" class="mono text-xs tracking-widest" :style="{ color: accentColor }">
+            {{ currentMission.netLabel ?? 'NET TBD' }}
+          </div>
+          <div v-else class="mono text-xs tracking-widest" style="color:#a78bfa">MET {{ met }}</div>
         </div>
 
         <div class="w-px h-7 shrink-0" style="background:rgba(167,139,250,0.12)" />
@@ -107,47 +127,67 @@
 
     <!-- ═══════════════ GRID ═══════════════ -->
     <main class="px-4 py-3 space-y-3 max-w-425 mx-auto">
+      <Transition name="mission" mode="out-in">
+      <div :key="currentMission.id">
 
-      <!-- ROW 1 -->
-      <div class="row-1">
-        <MissionClock class="r1-left" />
-        <TelemetryPanel class="r1-right" :telemetry="telemetry" :dataSource="dataSource" />
-      </div>
+      <!-- ── ARTEMIS I: historical card only ── -->
+      <template v-if="currentMission.id === 'artemis1'">
+        <HistoricalCard :mission="currentMission" />
+      </template>
 
-      <!-- PHASE ALERT -->
-      <PhaseAlert />
+      <!-- ── ARTEMIS II / any active mission: full dashboard ── -->
+      <template v-else-if="isHistorical || isActive">
 
-      <!-- ROW 2 -->
-      <div class="row-2">
-        <TrajectoryMap class="r2-left" :telemetry="telemetry" />
-        <SystemStatus  class="r2-right" />
-      </div>
-
-      <!-- ROW 2.5: Live stream + timeline -->
-      <div class="row-25">
-        <LiveStream class="r25-main" />
-        <div class="r25-side space-y-3">
-          <MissionTimeline />
+        <!-- ROW 1 -->
+        <div class="row-1">
+          <MissionClock class="r1-left" />
+          <TelemetryPanel class="r1-right" :telemetry="telemetry" :dataSource="dataSource" />
         </div>
+
+        <!-- PHASE ALERT -->
+        <PhaseAlert />
+
+        <!-- ROW 2 -->
+        <div class="row-2">
+          <TrajectoryMap class="r2-left" :telemetry="telemetry" />
+          <SystemStatus  class="r2-right" />
+        </div>
+
+        <!-- ROW 2.5: Live stream + timeline -->
+        <div class="row-25">
+          <LiveStream class="r25-main" />
+          <div class="r25-side space-y-3">
+            <MissionTimeline />
+          </div>
+        </div>
+
+        <!-- ROW 3 -->
+        <div class="row-3">
+          <CrewPanel  class="r3-a" />
+          <AlertsLog  class="r3-b" :spaceWeather="spaceWeather" />
+        </div>
+
+        <!-- ROW 3.5: Mission Cost -->
+        <MissionCost />
+
+        <!-- ROW 4: Distance + DSN Map -->
+        <div class="row-4">
+          <DistanceGauge class="r4-a" :telemetry="telemetry" :dataSource="dataSource" />
+          <DSNMap        class="r4-b" :telemetry="telemetry" />
+        </div>
+
+        <!-- INFO CARD -->
+        <InfoCard />
+
+      </template>
+
+      <!-- ── PRE-LAUNCH: Artemis III panels ── -->
+      <template v-else-if="isPreLaunch">
+        <PreLaunchDashboard :mission="currentMission" :spaceWeather="spaceWeather" />
+      </template>
+
       </div>
-
-      <!-- ROW 3 -->
-      <div class="row-3">
-        <CrewPanel  class="r3-a" />
-        <AlertsLog  class="r3-b" :spaceWeather="spaceWeather" />
-      </div>
-
-      <!-- ROW 3.5: Mission Cost -->
-      <MissionCost />
-
-      <!-- ROW 4: Distance + DSN Map -->
-      <div class="row-4">
-        <DistanceGauge class="r4-a" :telemetry="telemetry" :dataSource="dataSource" />
-        <DSNMap        class="r4-b" :telemetry="telemetry" />
-      </div>
-
-      <!-- INFO CARD -->
-      <InfoCard />
+      </Transition>
 
     </main>
 
@@ -196,10 +236,12 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
 import { h } from 'vue'
-import { useMissionData, MISSION_EPOCH } from './composables/useMissionData.js'
+import { useMissionData } from './composables/useMissionData.js'
+import { missionEpoch, missionSplashdown } from './composables/useMission.js'
 import { useSystemStatus } from './composables/useSystemStatus.js'
+import { useMission } from './composables/useMission.js'
 
 // Inline component — no template compiler needed
 const StatusBadge = {
@@ -210,35 +252,67 @@ const StatusBadge = {
     }, p.suffix ? `${p.label} ${p.suffix}` : p.label)
   }
 }
-import LiveStream      from './components/LiveStream.vue'
-import InfoCard        from './components/InfoCard.vue'
-import ShareBar        from './components/ShareBar.vue'
-import TopBar          from './components/TopBar.vue'
-import MissionClock    from './components/MissionClock.vue'
-import TelemetryPanel  from './components/TelemetryPanel.vue'
-import TrajectoryMap   from './components/TrajectoryMap.vue'
-import SystemStatus    from './components/SystemStatus.vue'
-import MissionTimeline from './components/MissionTimeline.vue'
-import CrewPanel       from './components/CrewPanel.vue'
-import AlertsLog       from './components/AlertsLog.vue'
-import DistanceGauge   from './components/DistanceGauge.vue'
-import DSNMap          from './components/DSNMap.vue'
-import PhaseAlert      from './components/PhaseAlert.vue'
-import MissionCost     from './components/MissionCost.vue'
+import LiveStream         from './components/LiveStream.vue'
+import InfoCard           from './components/InfoCard.vue'
+import ShareBar           from './components/ShareBar.vue'
+import TopBar             from './components/TopBar.vue'
+import MissionClock       from './components/MissionClock.vue'
+import TelemetryPanel     from './components/TelemetryPanel.vue'
+import TrajectoryMap      from './components/TrajectoryMap.vue'
+import SystemStatus       from './components/SystemStatus.vue'
+import MissionTimeline    from './components/MissionTimeline.vue'
+import CrewPanel          from './components/CrewPanel.vue'
+import AlertsLog          from './components/AlertsLog.vue'
+import DistanceGauge      from './components/DistanceGauge.vue'
+import DSNMap             from './components/DSNMap.vue'
+import PhaseAlert         from './components/PhaseAlert.vue'
+import MissionCost        from './components/MissionCost.vue'
+import MissionSelector    from './components/MissionSelector.vue'
+import HistoricalCard     from './components/HistoricalCard.vue'
+import PreLaunchDashboard from './components/PreLaunchDashboard.vue'
 
 const { telemetry, spaceWeather, dataSource } = useMissionData()
 const { vehicleStatus, crewStatus, dispose: disposeStatus } = useSystemStatus()
+const { currentMission, missionState, isHistorical, isPreLaunch, isActive, accentColor, accentShadow, setMission } = useMission()
 onUnmounted(disposeStatus)
 
+// ── Dynamic CSS vars + title + URL hash ───────────────────────────────────
+function applyMissionTheme(mission) {
+  const root = document.documentElement
+  const vars = mission.cssVars ?? {}
+  for (const [k, v] of Object.entries(vars)) root.style.setProperty(k, v)
+
+  // CSS custom property transitions don't trigger on body background —
+  // set background directly so the switch is instant and reliable
+  const bg = vars['--bg']
+  document.body.style.backgroundColor = bg ?? ''
+  document.body.style.backgroundImage = bg
+    ? `radial-gradient(ellipse 70% 40% at 50% -5%, ${vars['--bg-glow'] ?? 'transparent'} 0%, transparent 65%)`
+    : ''
+
+  document.title = `${mission.name} — Mission Control`
+  history.replaceState(null, '', `#${mission.id}`)
+}
+
+watch(currentMission, applyMissionTheme, { immediate: true })
+
+// Restore mission from URL hash on load
+onMounted(() => {
+  const hash = window.location.hash.slice(1)
+  if (hash) setMission(hash)
+})
+
 const STATUS_COLOR = {
-  NOMINAL:  { color: '#34d399', shadow: 'rgba(52,211,153,0.5)'  },
-  CAUTION:  { color: '#fbbf24', shadow: 'rgba(251,191,36,0.5)'  },
-  ADVISORY: { color: '#fbbf24', shadow: 'rgba(251,191,36,0.5)'  },
-  CRITICAL: { color: '#f87171', shadow: 'rgba(248,113,113,0.5)' },
+  NOMINAL:    { color: '#34d399', shadow: 'rgba(52,211,153,0.5)'  },
+  CAUTION:    { color: '#fbbf24', shadow: 'rgba(251,191,36,0.5)'  },
+  ADVISORY:   { color: '#fbbf24', shadow: 'rgba(251,191,36,0.5)'  },
+  CRITICAL:   { color: '#f87171', shadow: 'rgba(248,113,113,0.5)' },
+  COMPLETED:  { color: '#34d399', shadow: 'rgba(52,211,153,0.3)'  },
 }
 const vehicleColor  = computed(() => STATUS_COLOR[vehicleStatus.value]  ?? STATUS_COLOR.NOMINAL)
 const crewColor     = computed(() => STATUS_COLOR[crewStatus.value]     ?? STATUS_COLOR.NOMINAL)
 const overallStatus = computed(() => {
+  if (isMissionComplete.value) return 'COMPLETED'
   if (vehicleStatus.value === 'CRITICAL' || crewStatus.value === 'CRITICAL') return 'CRITICAL'
   if (vehicleStatus.value === 'CAUTION'  || crewStatus.value === 'CAUTION')  return 'CAUTION'
   if (vehicleStatus.value === 'ADVISORY' || crewStatus.value === 'ADVISORY') return 'ADVISORY'
@@ -258,8 +332,15 @@ const headerDate = computed(() => {
   return `${String(d.getUTCDate()).padStart(2,'0')} ${MONTHS[d.getUTCMonth()]} ${d.getUTCFullYear()}`
 })
 const utc = computed(() => now.value.toISOString().slice(11, 19))
+const isMissionComplete = computed(() =>
+  isHistorical.value && !!missionSplashdown.value && now.value >= missionSplashdown.value
+)
+
 const met = computed(() => {
-  const ms = Math.max(0, now.value - MISSION_EPOCH)
+  const epoch = missionEpoch.value ?? now.value
+  // Freeze at splashdown for completed historical missions
+  const ref = isMissionComplete.value ? missionSplashdown.value : now.value
+  const ms = Math.max(0, ref - epoch)
   const s = Math.floor(ms / 1000)
   const d = Math.floor(s / 86400)
   const h = Math.floor((s % 86400) / 3600)
@@ -269,13 +350,15 @@ const met = computed(() => {
 })
 
 // ── Splashdown countdown ───────────────────────────────────────────────────
-// D10 splashdown: 9.5 days after launch epoch
-const SPLASHDOWN = new Date(MISSION_EPOCH.getTime() + 9.5 * 86400_000)
-
-const splashdownPast = computed(() => now.value >= SPLASHDOWN)
+const splashdownPast = computed(() => {
+  const sd = missionSplashdown.value
+  return sd ? now.value >= sd : false
+})
 const splashdownCountdown = computed(() => {
+  const sd = missionSplashdown.value
+  if (!sd) return null
   if (splashdownPast.value) return 'AMERIZADO ✓'
-  const diff = Math.floor((SPLASHDOWN - now.value) / 1000)
+  const diff = Math.floor((sd - now.value) / 1000)
   const d = Math.floor(diff / 86400)
   const h = Math.floor((diff % 86400) / 3600)
   const m = Math.floor((diff % 3600) / 60)
@@ -343,6 +426,20 @@ onMounted(() => {
 }
 @media (max-width: 680px) {
   .row-1, .row-2, .row-25, .row-3, .row-4 { grid-template-columns: 1fr; }
+}
+
+/* ── Mission transition ── */
+.mission-enter-active,
+.mission-leave-active {
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+.mission-enter-from {
+  opacity: 0;
+  transform: translateY(10px);
+}
+.mission-leave-to {
+  opacity: 0;
+  transform: translateY(-6px);
 }
 
 /* ── Easter egg bunny ── */

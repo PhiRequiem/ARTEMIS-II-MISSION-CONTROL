@@ -23,7 +23,7 @@
         <!-- Segmented bar -->
         <div class="flex gap-0.5">
           <div
-            v-for="(phase, i) in MISSION_PHASES"
+            v-for="(phase, i) in phasesWithShort"
             :key="phase.id"
             class="flex-1 py-1 flex items-center justify-center rounded-sm text-[8px] font-bold mono tracking-wide cursor-default transition-all duration-300"
             :class="[
@@ -55,19 +55,16 @@
 
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from 'vue'
-import { MISSION_EPOCH, MISSION_PHASES, getMissionDay } from '../composables/useMissionData.js'
+import { missionEpoch, missionPhases, useFrozenNow } from '../composables/useMission.js'
 
-const PHASES_WITH_SHORT = MISSION_PHASES.map(p => ({
+const phasesWithShort = computed(() => missionPhases.value.map(p => ({
   ...p,
   short: p.label.slice(0,6).toUpperCase(),
-}))
+})))
 
-const now = ref(new Date())
-let timer = null
-onMounted(() => { timer = setInterval(() => now.value = new Date(), 1000) })
-onUnmounted(() => clearInterval(timer))
+const now = useFrozenNow()
 
-const elapsedMs = computed(() => Math.max(0, now.value - MISSION_EPOCH))
+const elapsedMs = computed(() => Math.max(0, now.value - (missionEpoch.value ?? now.value)))
 const elapsedDays = computed(() => elapsedMs.value / 86400000)
 
 const met = computed(() => {
@@ -81,15 +78,17 @@ const met = computed(() => {
 
 const currentPhase = computed(() => {
   const d = elapsedDays.value
-  for (let i = MISSION_PHASES.length - 1; i >= 0; i--) {
-    if (d >= MISSION_PHASES[i].day - 1) return MISSION_PHASES[i]
+  const phases = missionPhases.value
+  for (let i = phases.length - 1; i >= 0; i--) {
+    if (d >= phases[i].day - 1) return phases[i]
   }
-  return MISSION_PHASES[0]
+  return phases[0]
 })
 
 function getPhaseState(index) {
   const d = elapsedDays.value
-  const phase = MISSION_PHASES[index]
+  const phase = missionPhases.value[index]
+  if (!phase) return 'pending'
   if (d >= phase.end) return 'done'
   if (d >= phase.day - 1) return 'active'
   return 'pending'
@@ -111,7 +110,7 @@ const nextMilestone = computed(() => {
 
 const countdown = computed(() => {
   if (!nextMilestone.value) return '--'
-  const targetMs = MISSION_EPOCH.getTime() + nextMilestone.value.epoch * 86400000
+  const targetMs = (missionEpoch.value?.getTime() ?? 0) + nextMilestone.value.epoch * 86400000
   const diffS = Math.max(0, Math.floor((targetMs - now.value) / 1000))
   const h = Math.floor(diffS / 3600)
   const m = Math.floor((diffS % 3600) / 60)

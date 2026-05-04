@@ -1,5 +1,13 @@
 import { ref, computed } from 'vue'
-import { getMissionDay } from './useMissionData.js'
+import { missionEpoch, missionFallback } from './useMission.js'
+
+function getMissionDay() {
+  const epoch = missionEpoch.value
+  if (!epoch) return 1
+  const elapsed = (new Date() - epoch) / (1000 * 60 * 60 * 24)
+  const len = missionFallback.value.length || 10
+  return Math.max(1, Math.min(len, Math.floor(elapsed) + 1))
+}
 
 // ── System definitions with dynamic values ────────────────────────────────
 // Base values interpolated slightly by mission day to feel alive

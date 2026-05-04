@@ -1,51 +1,35 @@
 import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { missionEpoch, missionFallback } from './useMission.js'
 
-// Mission epoch: Artemis II launch
-export const MISSION_EPOCH = new Date('2026-04-01T22:35:00Z')
-
-// Mission phases
-export const MISSION_PHASES = [
-  { id: 'launch',   label: 'Launch',   day: 1,  end: 0.5  },
-  { id: 'orbit',    label: 'Orbit',    day: 1,  end: 1.0  },
-  { id: 'tli',      label: 'TLI',      day: 2,  end: 2.0  },
-  { id: 'transit',  label: 'Transit',  day: 3,  end: 5.0  },
-  { id: 'flyby',    label: 'Flyby',    day: 6,  end: 6.5  },
-  { id: 'return',   label: 'Return',   day: 7,  end: 9.5  },
-  { id: 'reentry',  label: 'Reentry',  day: 10, end: 10.5 },
-]
-
-// Fallback telemetry by mission day
-export const FALLBACK_DATA = [
-  { day: 1,  distEarth: 400,     distMoon: 384000, vel: 7.8,  phase: 'orbit'   },
-  { day: 2,  distEarth: 85000,   distMoon: 299000, vel: 3.2,  phase: 'tli'     },
-  { day: 3,  distEarth: 195000,  distMoon: 189000, vel: 1.8,  phase: 'transit' },
-  { day: 4,  distEarth: 270000,  distMoon: 115000, vel: 1.2,  phase: 'transit' },
-  { day: 5,  distEarth: 342000,  distMoon: 43000,  vel: 1.0,  phase: 'transit' },
-  { day: 6,  distEarth: 390000,  distMoon: 6400,   vel: 0.9,  phase: 'flyby'   },
-  { day: 7,  distEarth: 350000,  distMoon: 35000,  vel: 1.1,  phase: 'return'  },
-  { day: 8,  distEarth: 270000,  distMoon: 115000, vel: 1.4,  phase: 'return'  },
-  { day: 9,  distEarth: 160000,  distMoon: 225000, vel: 2.1,  phase: 'return'  },
-  { day: 10, distEarth: 8000,    distMoon: 377000, vel: 7.2,  phase: 'reentry' },
-]
+// Re-export for backward compat
+export { missionEpoch as MISSION_EPOCH, missionFallback as FALLBACK_DATA }
+export { missionPhases as MISSION_PHASES } from './useMission.js'
 
 export function getMissionDay() {
-  const now = new Date()
-  const elapsed = (now - MISSION_EPOCH) / (1000 * 60 * 60 * 24)
-  return Math.max(1, Math.min(10, Math.floor(elapsed) + 1))
+  const epoch = missionEpoch.value
+  if (!epoch) return 1
+  const elapsed = (new Date() - epoch) / (1000 * 60 * 60 * 24)
+  const data = missionFallback.value
+  return Math.max(1, Math.min(data.length || 10, Math.floor(elapsed) + 1))
 }
 
 export function getFallbackForDay(day) {
-  const d = FALLBACK_DATA.find(f => f.day === day) || FALLBACK_DATA[FALLBACK_DATA.length - 1]
-  const elapsed = (new Date() - MISSION_EPOCH) / (1000 * 60 * 60 * 24)
+  const epoch = missionEpoch.value
+  const data  = missionFallback.value
+  if (!epoch || !data.length) return { distEarth: 0, distMoon: 384000, vel: '0.00', tempExt: '20.0', tempCabin: '21.0', dsn: '1.30', phase: 'unknown', source: 'fallback' }
+
+  const d = data.find(f => f.day === day) || data[data.length - 1]
+  const elapsed = (new Date() - epoch) / (1000 * 60 * 60 * 24)
   const frac = Math.max(0, elapsed - Math.floor(elapsed))
-  const next = FALLBACK_DATA.find(f => f.day === day + 1)
-  
+  const next = data.find(f => f.day === day + 1)
+
   let distEarth = next ? d.distEarth + (next.distEarth - d.distEarth) * frac : d.distEarth
   let distMoon  = next ? d.distMoon  + (next.distMoon  - d.distMoon)  * frac : d.distMoon
   let vel       = next ? d.vel       + (next.vel       - d.vel)       * frac : d.vel
   let phase     = d.phase
 
-  if (elapsed >= 9.05) {
+  const missionDays = data.length
+  if (elapsed >= missionDays - 0.95) {
     distEarth = 0
     vel = 0
     phase = 'splashdown'
@@ -55,10 +39,10 @@ export function getFallbackForDay(day) {
     distEarth:   Math.round(distEarth),
     distMoon:    Math.round(distMoon),
     vel:         vel.toFixed(2),
-    tempExt:     elapsed >= 9.05 ? '20.0' : (-90 + Math.sin(elapsed * 0.7) * 40).toFixed(1),
-    tempCabin:   elapsed >= 9.05 ? '21.0' : (20 + Math.sin(elapsed * 0.3) * 3).toFixed(1),
+    tempExt:     phase === 'splashdown' ? '20.0' : (-90 + Math.sin(elapsed * 0.7) * 40).toFixed(1),
+    tempCabin:   phase === 'splashdown' ? '21.0' : (20 + Math.sin(elapsed * 0.3) * 3).toFixed(1),
     dsn:         (1.3 + distEarth / 400000 * 1.8).toFixed(2),
-    phase:       phase,
+    phase,
     source:      'fallback',
   }
 }

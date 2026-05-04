@@ -1,5 +1,5 @@
-import { computed, ref, onMounted, onUnmounted } from 'vue'
-import { MISSION_EPOCH } from './useMissionData.js'
+import { computed } from 'vue'
+import { missionEpoch, useFrozenNow } from './useMission.js'
 
 // ── Key mission timestamps (seconds after epoch) ──────────────────────────
 const T = {
@@ -28,12 +28,9 @@ export function ms2s(ms) { return ms / 1000 }
 export function s2ms(s)  { return s * 1000  }
 
 export function usePhaseContent() {
-  const now = ref(new Date())
-  let timer = null
-  onMounted(() => { timer = setInterval(() => now.value = new Date(), 1000) })
-  onUnmounted(() => clearInterval(timer))
+  const now = useFrozenNow()
 
-  const elapsedS = computed(() => ms2s(now.value - MISSION_EPOCH))
+  const elapsedS = computed(() => ms2s(now.value - (missionEpoch.value ?? now.value)))
 
   // ── Helpers ──────────────────────────────────────────────────────────────
   function secUntil(key)  { return Math.max(0, T[key] - elapsedS.value) }
