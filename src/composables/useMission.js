@@ -39,7 +39,13 @@ export function useMission() {
   function setMission(id) {
     if (!MISSIONS_BY_ID[id]) return
     _active.value = id
-    localStorage.setItem(STORAGE_KEY, id)
+    // Solo persistir misiones no-históricas como default de próxima visita
+    const state = MISSIONS_BY_ID[id].state
+    if (state !== 'historical') {
+      localStorage.setItem(STORAGE_KEY, id)
+    } else {
+      localStorage.removeItem(STORAGE_KEY)
+    }
   }
 
   const currentMission = computed(() => MISSIONS_BY_ID[_active.value] ?? MISSIONS_BY_ID['artemis3'])
