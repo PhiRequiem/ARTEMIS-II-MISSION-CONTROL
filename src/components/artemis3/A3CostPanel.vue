@@ -55,7 +55,7 @@
       <div class="flex gap-3 flex-wrap" style="border-top:1px solid rgba(0,0,0,0.12); padding-top:8px">
         <a href="https://oig.nasa.gov/wp-content/uploads/2026/03/final-report-ig-26-004-nasas-management-of-the-human-landing-system-contracts.pdf" target="_blank" rel="noopener" class="src-link">↗ OIG HLS Report 2026</a>
         <a href="https://www.gao.gov/products/gao-23-105338" target="_blank" rel="noopener" class="src-link">↗ GAO Artemis Report 2023</a>
-        <a href="https://oig.nasa.gov/wp-content/uploads/2022/11/ig-22-003.pdf" target="_blank" rel="noopener" class="src-link">↗ OIG Artemis Costs 2022</a>
+        <a href="https://oig.nasa.gov/wp-content/uploads/2024/02/IG-22-003.pdf" target="_blank" rel="noopener" class="src-link">↗ OIG Artemis Costs 2022</a>
       </div>
 
     </div>
