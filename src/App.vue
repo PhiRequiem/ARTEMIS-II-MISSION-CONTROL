@@ -196,6 +196,7 @@
 
     </main>
 
+    <MissionHint />
     <ShareBar />
 
     <!-- 🐇 Easter egg -->
@@ -273,6 +274,7 @@ import DSNMap             from './components/DSNMap.vue'
 import PhaseAlert         from './components/PhaseAlert.vue'
 import MissionCost        from './components/MissionCost.vue'
 import MissionSelector    from './components/MissionSelector.vue'
+import MissionHint        from './components/MissionHint.vue'
 import HistoricalCard     from './components/HistoricalCard.vue'
 import AnnouncedCard      from './components/AnnouncedCard.vue'
 import PreLaunchDashboard from './components/PreLaunchDashboard.vue'
