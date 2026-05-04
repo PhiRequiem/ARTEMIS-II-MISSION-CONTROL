@@ -1,15 +1,21 @@
 <template>
-  <div class="flex items-center gap-1">
+  <div class="selector">
     <button
       v-for="m in missions"
       :key="m.id"
       @click="setMission(m.id)"
       class="mission-btn"
       :class="{ active: activeMissionId === m.id }"
-      :style="activeMissionId === m.id ? `--accent: ${m.accentColor}; --shadow: ${m.accentShadow}` : ''"
+      :style="`--mc: ${m.accentColor}; --ms: ${m.accentShadow}`"
+      :title="m.label"
     >
-      <span class="btn-label" :data-short="m.name.split(' ')[1]">{{ m.label }}</span>
-      <span class="btn-badge" :class="m.state">{{ STATE_LABELS[m.state] }}</span>
+      <!-- Roman numeral — siempre en color de misión -->
+      <span class="btn-roman">{{ ROMAN[m.id] }}</span>
+
+      <div class="btn-info">
+        <span class="btn-name">{{ m.label }}</span>
+        <span class="btn-state" :class="m.state">{{ STATE_LABELS[m.state] }}</span>
+      </div>
     </button>
   </div>
 </template>
@@ -19,6 +25,8 @@ import { useMission } from '../composables/useMission.js'
 
 const { missions, activeMissionId, setMission } = useMission()
 
+const ROMAN = { artemis1: 'I', artemis2: 'II', artemis3: 'III' }
+
 const STATE_LABELS = {
   'historical': 'HIST',
   'pre-launch': 'PRE',
@@ -27,71 +35,114 @@ const STATE_LABELS = {
 </script>
 
 <style scoped>
+.selector {
+  display: flex;
+  align-items: stretch;
+  gap: 4px;
+}
+
 .mission-btn {
   display: flex;
-  flex-direction: column;
   align-items: center;
-  gap: 1px;
-  padding: 3px 8px;
-  border-radius: 4px;
-  border: 1px solid rgba(167,139,250,0.12);
-  background: transparent;
+  gap: 7px;
+  padding: 4px 10px 4px 8px;
+  border-radius: 6px;
+  border: 1px solid rgba(255,255,255,0.06);
+  background: rgba(255,255,255,0.03);
   cursor: pointer;
-  transition: all 0.2s;
-  line-height: 1;
+  transition: background 0.18s, border-color 0.18s, box-shadow 0.18s;
+  position: relative;
+  overflow: hidden;
 }
+
+/* borde izquierdo de color siempre visible */
+.mission-btn::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 3px;
+  background: var(--mc);
+  opacity: 0.45;
+  border-radius: 6px 0 0 6px;
+  transition: opacity 0.18s;
+}
+
 .mission-btn:hover {
-  border-color: rgba(167,139,250,0.35);
-  background: rgba(167,139,250,0.06);
+  background: rgba(255,255,255,0.06);
+  border-color: rgba(255,255,255,0.12);
 }
+.mission-btn:hover::before { opacity: 0.7; }
+
 .mission-btn.active {
-  border-color: var(--accent);
-  background: color-mix(in srgb, var(--accent) 12%, transparent);
-  box-shadow: 0 0 8px var(--shadow);
+  background: color-mix(in srgb, var(--mc) 14%, transparent);
+  border-color: color-mix(in srgb, var(--mc) 45%, transparent);
+  box-shadow: 0 0 10px var(--ms);
 }
+.mission-btn.active::before { opacity: 1; }
 
-.btn-label {
+/* Número romano — el elemento más visible */
+.btn-roman {
   font-family: 'Orbitron', monospace;
-  font-size: 0.55rem;
-  font-weight: 700;
-  letter-spacing: 0.12em;
-  color: rgba(167,139,250,0.5);
-  white-space: nowrap;
+  font-size: 1rem;
+  font-weight: 900;
+  color: var(--mc);
+  opacity: 0.5;
+  line-height: 1;
+  min-width: 20px;
+  text-align: center;
+  transition: opacity 0.18s;
+  letter-spacing: -0.02em;
 }
-.mission-btn.active .btn-label {
-  color: var(--accent);
+.mission-btn:hover .btn-roman  { opacity: 0.75; }
+.mission-btn.active .btn-roman {
+  opacity: 1;
+  text-shadow: 0 0 10px var(--ms);
 }
 
-.btn-badge {
+/* Info secundaria */
+.btn-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+}
+
+.btn-name {
+  font-family: 'Orbitron', monospace;
+  font-size: 0.48rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  color: rgba(255,255,255,0.3);
+  white-space: nowrap;
+  text-transform: uppercase;
+  transition: color 0.18s;
+}
+.mission-btn.active .btn-name { color: rgba(255,255,255,0.7); }
+
+.btn-state {
   font-family: 'Share Tech Mono', monospace;
-  font-size: 0.45rem;
-  letter-spacing: 0.08em;
-  padding: 1px 3px;
+  font-size: 0.42rem;
+  letter-spacing: 0.1em;
+  padding: 1px 4px;
   border-radius: 2px;
+  text-transform: uppercase;
 }
-.btn-badge.historical {
-  color: rgba(167,139,250,0.4);
-  background: rgba(167,139,250,0.08);
-}
-.btn-badge.pre-launch {
-  color: #38bdf8;
-  background: rgba(56,189,248,0.1);
-}
-.btn-badge.active {
-  color: #34d399;
-  background: rgba(52,211,153,0.1);
+.btn-state.historical { color: rgba(167,139,250,0.5); background: rgba(167,139,250,0.08); }
+.btn-state.pre-launch { color: #38bdf8;               background: rgba(56,189,248,0.1);   }
+.btn-state.active     {
+  color: #34d399; background: rgba(52,211,153,0.1);
   animation: pulse-badge 2s ease-in-out infinite;
 }
 
 @keyframes pulse-badge {
   0%, 100% { opacity: 1; }
-  50% { opacity: 0.6; }
+  50%       { opacity: 0.55; }
 }
 
-/* En mobile solo mostrar el número romano + badge, ocultar "Artemis" */
-@media (max-width: 480px) {
-  .btn-label::before { content: attr(data-short); }
-  .btn-label span { display: none; }
-  .mission-btn { padding: 3px 6px; }
+/* Mobile: solo romano + badge */
+@media (max-width: 520px) {
+  .btn-info { display: none; }
+  .mission-btn { padding: 5px 8px; }
+  .btn-roman { font-size: 0.85rem; }
 }
 </style>
