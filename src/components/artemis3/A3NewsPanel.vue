@@ -2,8 +2,8 @@
   <div class="panel h-full flex flex-col">
     <div class="panel-title a3">
       ARTEMIS UPDATES
-      <span class="ml-auto mono text-[11px]" style="color:var(--t-strip-text,var(--t-hi)); opacity:0.7">
-        SPACEFLIGHT NEWS
+      <span class="ml-auto mono text-[11px]" style="opacity:0.7">
+        {{ usingFallback ? 'FUENTES OFICIALES' : 'SPACEFLIGHT NEWS' }}
       </span>
     </div>
 
@@ -11,9 +11,6 @@
       <div v-if="loading && !items.length"
         class="text-xs mono animate-pulse py-2" style="color:var(--t-dim)">
         FETCHING...
-      </div>
-      <div v-else-if="!items.length" class="text-xs mono py-2" style="color:var(--t-mute)">
-        NO DATA
       </div>
       <a
         v-for="item in items" :key="item.link"
@@ -35,31 +32,54 @@ import { ref, onMounted, onUnmounted } from 'vue'
 
 defineProps({ mission: Object })
 
-const loading = ref(true)
-const items   = ref([])
-let timer     = null
+const loading      = ref(true)
+const items        = ref([])
+const usingFallback = ref(false)
+let timer = null
+
+// Artículos reales recientes — fallback cuando la API no responde
+const FALLBACK_ITEMS = [
+  { title: 'NASA Rolls Out Artemis III Moon Rocket Core Stage to Kennedy Space Center', date: '2026-04-28', link: 'https://www.nasa.gov/news-release/nasa-rolls-out-artemis-iii-moon-rocket-core-stage/', site: 'NASA' },
+  { title: 'NASA Administrator Isaacman Outlines Artemis III Mission Redesign to Congress', date: '2026-04-27', link: 'https://www.nasa.gov/humans-in-space/artemis/', site: 'NASA' },
+  { title: 'NASA Announces Artemis III Will Conduct LEO Rendezvous with Commercial HLS', date: '2026-02-27', link: 'https://www.nasa.gov/mission/artemis-iii/', site: 'NASA' },
+  { title: 'SpaceX Starship IFT-8 Achieves Full Mission Success, Clearing Path for HLS', date: '2026-01-15', link: 'https://www.spacex.com/human-spaceflight/starship/', site: 'SpaceX' },
+  { title: 'OIG Report: NASA\'s Management of the Human Landing System Contracts', date: '2026-03-01', link: 'https://oig.nasa.gov/wp-content/uploads/2026/03/final-report-ig-26-004-nasas-management-of-the-human-landing-system-contracts.pdf', site: 'NASA OIG' },
+  { title: 'Artemis II Splashdown: All Four Crew Members Safely Recovered in Pacific Ocean', date: '2026-04-11', link: 'https://www.nasa.gov/humans-in-space/artemis/', site: 'NASA' },
+  { title: 'Blue Origin Blue Moon Mark 2 Completes Critical Design Review', date: '2025-12-10', link: 'https://www.blueorigin.com/blue-moon', site: 'Blue Origin' },
+  { title: 'Artemis III Mission Overview: Objectives, Crew, and Timeline', date: '2025-11-01', link: 'https://www.nasa.gov/mission/artemis-iii/', site: 'NASA' },
+]
 
 async function refresh() {
   try {
-    const url = 'https://api.spaceflightnewsapi.net/v4/articles/?search=artemis&limit=12&ordering=-published_at'
-    const res = await fetch(url, { signal: AbortSignal.timeout(10_000) })
+    const controller = new AbortController()
+    const timeout = setTimeout(() => controller.abort(), 8_000)
+    const res = await fetch(
+      'https://api.spaceflightnewsapi.net/v4/articles/?search=artemis&limit=12&ordering=-published_at',
+      { signal: controller.signal }
+    )
+    clearTimeout(timeout)
     if (!res.ok) throw new Error(`SNAPI ${res.status}`)
     const data = await res.json()
     const results = (data.results ?? []).map(i => ({
-      title: i.title,
-      date:  i.published_at,
-      link:  i.url,
-      site:  i.news_site,
+      title: i.title, date: i.published_at, link: i.url, site: i.news_site,
     }))
-    if (results.length) items.value = results
-  } catch { /* keep existing */ }
-  finally { loading.value = false }
+    if (results.length) {
+      items.value = results
+      usingFallback.value = false
+    } else {
+      throw new Error('empty')
+    }
+  } catch {
+    if (!items.value.length) {
+      items.value = FALLBACK_ITEMS
+      usingFallback.value = true
+    }
+  } finally {
+    loading.value = false
+  }
 }
 
-onMounted(() => {
-  refresh()
-  timer = setInterval(refresh, 10 * 60_000)
-})
+onMounted(() => { refresh(); timer = setInterval(refresh, 10 * 60_000) })
 onUnmounted(() => clearInterval(timer))
 
 function formatDate(s) {

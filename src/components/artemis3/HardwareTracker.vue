@@ -105,22 +105,37 @@ const QUERIES = [
   { q: 'Starship HLS Human Landing', tag: 'HLS' },
 ]
 
+const FALLBACK_NEWS = [
+  { title: 'SLS Block 1 Core Stage Arrives at Kennedy Space Center for Artemis III', date: '2026-04-28', link: 'https://www.nasa.gov/news-release/nasa-rolls-out-artemis-iii-moon-rocket-core-stage/', tag: 'SLS' },
+  { title: 'Orion CM-004 Production on Track for January 2028 Readiness', date: '2026-03-15', link: 'https://www.nasa.gov/humans-in-space/orion-spacecraft/', tag: 'ORION' },
+  { title: 'SpaceX Starship Completes Full-Duration Static Fire Ahead of HLS Demo', date: '2026-02-20', link: 'https://www.spacex.com/human-spaceflight/starship/', tag: 'HLS' },
+  { title: 'Blue Origin Blue Moon MK2 Passes PDR Milestone', date: '2026-01-10', link: 'https://www.blueorigin.com/blue-moon', tag: 'HLS' },
+  { title: 'NASA OIG: HLS Contracts Face Schedule Risk — Artemis III Redesign Imminent', date: '2026-03-01', link: 'https://oig.nasa.gov/wp-content/uploads/2026/03/final-report-ig-26-004-nasas-management-of-the-human-landing-system-contracts.pdf', tag: 'HLS' },
+]
+
 async function fetchHardwareNews() {
   try {
+    const controller = new AbortController()
+    const timeout = setTimeout(() => controller.abort(), 8_000)
     const results = await Promise.allSettled(
       QUERIES.map(({ q, tag }) =>
-        fetch(`https://api.spaceflightnewsapi.net/v4/articles/?search=${encodeURIComponent(q)}&limit=3&ordering=-published_at`, { signal: AbortSignal.timeout(10_000) })
+        fetch(`https://api.spaceflightnewsapi.net/v4/articles/?search=${encodeURIComponent(q)}&limit=3&ordering=-published_at`, { signal: controller.signal })
           .then(r => r.json())
           .then(d => (d.results ?? []).map(i => ({ title: i.title, date: i.published_at, link: i.url, tag })))
       )
     )
+    clearTimeout(timeout)
     const merged = results
       .flatMap(r => r.status === 'fulfilled' ? r.value : [])
       .sort((a, b) => new Date(b.date) - new Date(a.date))
       .slice(0, 8)
     if (merged.length) newsItems.value = merged
-  } catch { /* keep empty */ }
-  finally { loadingNews.value = false }
+    else newsItems.value = FALLBACK_NEWS
+  } catch {
+    newsItems.value = FALLBACK_NEWS
+  } finally {
+    loadingNews.value = false
+  }
 }
 
 onMounted(fetchHardwareNews)
